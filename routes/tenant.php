@@ -24,5 +24,5 @@ Route::middleware([
     PreventAccessFromCentralDomains::class,
 ])->prefix('v1')
     ->group(function () {
-        require __DIR__ . '/v1/auth.php';
+        require app_path('Modules/Auth/routes.php');
     });
