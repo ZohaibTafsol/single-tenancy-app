@@ -18,6 +18,10 @@ return new class extends Migration
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->string("tenant_id")->index()->nullable();
+            $table->text('google2fa_secret')->nullable();
+            $table->string('mfa_enabled')->default(1);
+            $table->timestamp("locked_until")->nullable();
+            $table->integer("failed_login_attempts")->default(0);
             $table->rememberToken();
             $table->timestamps();
         });
