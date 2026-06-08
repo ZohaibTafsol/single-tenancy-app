@@ -37,6 +37,16 @@ class RolesAndPermissionsSeeder extends Seeder
             'invoices.create',
             'invoices.approve',
             'invoices.delete',
+
+            'payers.view',
+            'payers.create',
+            'payers.edit',
+            'payers.delete',
+
+            'receipients.view',
+            'receipients.create',
+            'receipients.edit',
+            'receipients.delete',
         ];
 
         foreach ($permissions as $permission) {
