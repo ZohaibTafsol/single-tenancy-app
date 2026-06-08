@@ -29,7 +29,7 @@ Route::middleware([
         return 'This is your multi-tenant application. The id of the current tenant is ' . tenant('id');
     });
 
-    
+
     Route::get("register", [AuthController::class, "showRegistrationForm"])->name("register");
     Route::post("register", [AuthController::class, "register"])->name("register.post");
     Route::get("login", [AuthController::class, "showLoginForm"])->name("login");
