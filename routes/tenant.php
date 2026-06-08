@@ -21,7 +21,7 @@ use App\Http\Controllers\DashboardController;
 */
 
 Route::middleware([
-    'web',
+    'api',
     InitializeTenancyByDomain::class,
     PreventAccessFromCentralDomains::class,
 ])->group(function () {
