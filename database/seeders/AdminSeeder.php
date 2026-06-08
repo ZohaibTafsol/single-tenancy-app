@@ -6,7 +6,6 @@ use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use App\Models\User;
 use Spatie\Permission\Models\Role;
-use Spatie\Permission\Models\Permission;
 use Illuminate\Support\Str;
 
 class AdminSeeder extends Seeder
@@ -22,13 +21,7 @@ class AdminSeeder extends Seeder
             'email' => 'admin@tax.com',
             'password' => bcrypt('123123123'),
         ]);
-        $role = Role::create(['name' => 'Admin', 'guard_name' => 'web']);
-
-
-        $permissions = Permission::pluck('id')->toArray();
-
-        // Sync all permissions to the role
-        $role->syncPermissions($permissions);
+        $role = Role::firstOrCreate(['name' => 'admin', 'guard_name' => 'web']);
         $user->assignRole([$role->id]);
 
         /** -----------------------
@@ -44,18 +37,8 @@ class AdminSeeder extends Seeder
         );
 
         $supervisorRole = Role::firstOrCreate(
-            ['name' => 'Supervisor', 'guard_name' => 'web']
+            ['name' => 'accountant', 'guard_name' => 'web']
         );
-
-        // only user-related permissions
-        $userPermissions = Permission::whereIn('name', [
-            'user-list',
-            'user-create',
-            'user-edit',
-            'user-delete',
-        ])->pluck('name')->toArray();
-
-        $supervisorRole->syncPermissions($userPermissions);
         $supervisor->assignRole($supervisorRole);
     }
 }

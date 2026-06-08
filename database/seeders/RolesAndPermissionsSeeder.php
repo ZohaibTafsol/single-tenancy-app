@@ -72,10 +72,10 @@ class RolesAndPermissionsSeeder extends Seeder
             ],
 
             // Custom role you requested
-            'tax1099' => [
-                'invoices.view',
-                'invoices.create',
-            ],
+            // 'tax1099' => [
+            //     'invoices.view',
+            //     'invoices.create',
+            // ],
         ];
 
         /**
