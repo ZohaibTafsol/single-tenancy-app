@@ -9,7 +9,7 @@ interface PayerRepositoryContract
 {
     public function findByUuid(string $uuid);
     public function findById(int $id): ?Payer;
-    public function getPayers(array $filter_params = []): array;
+    public function getPayers(array $filter_params = []);
     public function create(PayerDTO $dto): Payer;
     public function updateStatus(): Payer;
     public function update(Payer $payer, PayerDTO $dto): Payer;

@@ -21,7 +21,7 @@ class PayerRepository implements PayerRepositoryContract
         $payer->update($dto->toArray());
         return $payer->fresh();
     }
-    public function getPayers(array $filter_params = []): array
+    public function getPayers(array $filter_params = [])
     {
         $query = Payer::query();
 
@@ -33,7 +33,7 @@ class PayerRepository implements PayerRepositoryContract
             $query->where('email', 'like', '%' . $filter_params['email'] . '%');
         }
 
-        return $query->get()->toArray();
+        return $query->paginate(10);
     }
     public function updateStatus(): Payer
     {
