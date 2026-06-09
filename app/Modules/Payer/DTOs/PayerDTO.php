@@ -7,6 +7,7 @@ class PayerDTO
     public function __construct(
         public ?string $file_type,
         public ?string $name,
+        public int $user_id, 
 
         // Individual
         public ?string $first_name,
@@ -49,8 +50,10 @@ class PayerDTO
     public static function fromRequest(array $data): self
     {
         return new self(
+
             $data['file_type'],
             $data['name'] ?? null,
+            $data['user_id'],
 
             // Individual
             $data['first_name'] ?? null,
@@ -94,6 +97,7 @@ class PayerDTO
     public function toArray(): array
     {
         return [
+            'user_id' => $this->user_id,
             'file_type' => $this->file_type,
             'name' => $this->file_type === 'Individual' ? $this->first_name . ' ' . $this->middle_name . ' ' . $this->last_name : $this->last_name, // Use 'name' for Business, 'last_name' for Individual
             'first_name' => $this->first_name,
