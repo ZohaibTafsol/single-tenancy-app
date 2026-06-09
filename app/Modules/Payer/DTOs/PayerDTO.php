@@ -5,46 +5,46 @@ namespace App\Modules\Payer\DTOs;
 class PayerDTO
 {
     public function __construct(
-        public ?string $file_type,
+        public ?string $fileType,
         public ?string $name,
-        public int $user_id, 
+        public int $userId,
 
         // Individual
-        public ?string $first_name,
-        public ?string $middle_name,
-        public ?string $last_name,
+        public ?string $firstName,
+        public ?string $middleName,
+        public ?string $lastName,
         public ?string $suffix,
 
         // ID
-        public ?string $id_type,
-        public ?string $id_number,
+        public ?string $idType,
+        public ?string $idNumber,
 
         // Contact
         public ?string $email,
-        public ?string $phone_number,
-        public ?string $disregarded_entity,
+        public ?string $phoneNumber,
+        public ?string $disregardedEntity,
 
         // Address
-        public ?string $address_one,
-        public ?string $address_two,
+        public ?string $addressOne,
+        public ?string $addressTwo,
         public ?string $city,
         public ?string $state,
-        public ?string $zip_code,
+        public ?string $zipCode,
         public ?string $country,
-        public ?bool $is_foreign_address,
+        public ?bool $isForeignAddress,
 
         // Optional business/meta
-        public ?string $withholding_tax_state_id,
-        public ?string $client_payer_id,
-        public ?string $group_id,
-        public ?bool $is_last_filing,
+        public ?string $withholdingTaxStateId,
+        public ?string $clientPayerId,
+        public ?string $groupId,
+        public ?bool $isLastFiling,
 
         // Tax1099 sync
-        public ?string $payer_detail_id,
-        public ?string $tin_status,
-        public ?bool $is_tin_check,
-        public ?bool $un_mask_recipient_tin,
-        public ?string $trade_name,
+        public ?string $payerDetailId,
+        public ?string $tinStatus,
+        public ?bool $isTinCheck,
+        public ?bool $unMaskRecipientTin,
+        public ?string $tradeName,
     ) {}
 
     public static function fromRequest(array $data): self
@@ -63,7 +63,7 @@ class PayerDTO
 
             // ID
             $data['id_type'] ?? null,
-            $data['id_number'] ?? null,
+            $data['id_number'],
 
             // Contact
             $data['email'] ?? null,
@@ -97,34 +97,34 @@ class PayerDTO
     public function toArray(): array
     {
         return [
-            'user_id' => $this->user_id,
-            'file_type' => $this->file_type,
-            'name' => $this->file_type === 'Individual' ? $this->first_name . ' ' . $this->middle_name . ' ' . $this->last_name : $this->last_name, // Use 'name' for Business, 'last_name' for Individual
-            'first_name' => $this->first_name,
-            'middle_name' => $this->middle_name,
-            'last_name' => $this->last_name,
+            'user_id' => $this->userId,
+            'file_type' => $this->fileType,
+            'name' => $this->fileType === 'Individual' ? $this->firstName . ' ' . $this->middleName . ' ' . $this->lastName : $this->lastName, // Use 'name' for Business, 'last_name' for Individual
+            'first_name' => $this->firstName,
+            'middle_name' => $this->middleName,
+            'last_name' => $this->lastName,
             'suffix' => $this->suffix,
-            'id_type' => $this->id_type,
-            'id_number' => $this->id_number,
+            'id_type' => $this->idType,
+            'id_number' => $this->idNumber,
             'email' => $this->email,
-            'phone_number' => $this->phone_number,
-            'disregarded_entity' => $this->disregarded_entity,
-            'address_one' => $this->address_one,
-            'address_two' => $this->address_two,
+            'phone_number' => $this->phoneNumber,
+            'disregarded_entity' => $this->disregardedEntity,
+            'address_one' => $this->addressOne,
+            'address_two' => $this->addressTwo,
             'city' => $this->city,
             'state' => $this->state,
-            'zip_code' => $this->zip_code,
+            'zip_code' => $this->zipCode,
             'country' => $this->country,
-            'is_foreign_address' => $this->is_foreign_address,
-            'withholding_tax_state_id' => $this->withholding_tax_state_id,
-            'client_payer_id' => $this->client_payer_id,
-            'group_id' => $this->group_id,
-            'is_last_filing' => $this->is_last_filing,
-            'payer_detail_id' => $this->payer_detail_id,
-            'tin_status' => $this->tin_status,
-            'is_tin_check' => $this->is_tin_check,
-            'un_mask_recipient_tin' => $this->un_mask_recipient_tin,
-            'trade_name' => $this->trade_name,
+            'is_foreign_address' => $this->isForeignAddress,
+            'withholding_tax_state_id' => $this->withholdingTaxStateId,
+            'client_payer_id' => $this->clientPayerId,
+            'group_id' => $this->groupId,
+            'is_last_filing' => $this->isLastFiling,
+            'payer_detail_id' => $this->payerDetailId,
+            'tin_status' => $this->tinStatus,
+            'is_tin_check' => $this->isTinCheck,
+            'un_mask_recipient_tin' => $this->unMaskRecipientTin,
+            'trade_name' => $this->tradeName,
         ];
     }
 }

@@ -2,11 +2,12 @@
 
 namespace App\Modules\Payer\Actions;
 
-use App\Models\Payer;
+use App\Modules\Payer\Models\Payer;
 use App\Modules\Payer\Contracts\PayerRepositoryContract;
 use App\Modules\Payer\DTOs\PayerDTO;
+use Illuminate\Support\Facades\DB;
 
-class StorePayerAction
+class CreatePayerAction
 {
     public function __construct(
         private readonly PayerRepositoryContract $payerRepository,
@@ -14,6 +15,8 @@ class StorePayerAction
     }
     public function execute(PayerDTO $dto): Payer
     {
-        return $this->payerRepository->store($dto);
+        return DB::transaction(function () use ($dto) {
+            return $this->payerRepository->create($dto);
+        });
     }
 }

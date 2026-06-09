@@ -29,9 +29,9 @@ class PayerController extends Controller
     public function store(CreatePayerRequest $request): JsonResponse
     {
         $data = $request->validated();
-        $data["user_id"] = auth()->id();
+        $data["user_id"] = $data["user_id"] ?? auth()->id();
         $dto = PayerDTO::fromRequest($data);
-        $result = $this->payerService->store($dto);
+        $result = $this->payerService->createPayer($dto);
         return $this->success($result->toArray(), 'Payer Created Successful..');
     }
 

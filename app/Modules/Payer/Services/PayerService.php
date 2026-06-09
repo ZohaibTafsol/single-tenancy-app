@@ -2,17 +2,18 @@
 
 namespace App\Modules\Payer\Services;
 
-use App\Models\Payer;
-use App\Modules\Payer\Actions\StorePayerAction;
+use App\Modules\Payer\Models\Payer;
+use App\Modules\Payer\Actions\CreatePayerAction;
 use App\Modules\Payer\Actions\UpdatePayerAction;
 use App\Modules\Payer\Contracts\PayerRepositoryContract;
 use App\Modules\Payer\DTOs\PayerDTO;
+use Illuminate\Support\Facades\DB;
 use App\Modules\Payer\Exceptions\PayerNotFoundException;
 
 class PayerService
 {
     public function __construct(
-        private readonly StorePayerAction  $storePayerAction,
+        private readonly CreatePayerAction  $createPayerAction,
         private readonly UpdatePayerAction $updatePayerAction,
         private readonly PayerRepositoryContract $payerRepository,
     ) {}
@@ -20,17 +21,19 @@ class PayerService
     {
         return $this->payerRepository->getPayers($filter_params);
     }
-    public function store(PayerDTO $dto): Payer
+    public function createPayer(PayerDTO $dto): Payer
     {
-        return $this->storePayerAction->execute($dto);
+        return $this->createPayerAction->execute($dto);
     }
 
-   public function update(int $id, PayerDTO $dto): Payer
+    public function update(int $id, PayerDTO $dto): Payer
     {
-        return $this->updatePayerAction->execute($id, $dto);
+        return DB::transaction(function () use ($id, $dto) {
+            return $this->updatePayerAction->execute($id, $dto);
+        });
     }
 
-   public function delete(int $id): void
+    public function delete(int $id): void
     {
         $payer = $this->payerRepository->findById($id);
 
