@@ -8,13 +8,11 @@ use App\Modules\Payer\Exceptions\PayerNotFoundException;
 use App\Modules\Payer\Http\Requests\CreatePayerRequest;
 use App\Modules\Payer\Http\Requests\UpdatePayerRequest;
 use App\Modules\Payer\Services\PayerService;
-use App\Traits\ApiResponse;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class PayerController extends Controller
 {
-    use ApiResponse;
     public function __construct(
         private readonly PayerService $payerService,
     ) {}
@@ -29,7 +27,7 @@ class PayerController extends Controller
     public function store(CreatePayerRequest $request): JsonResponse
     {
         $data = $request->validated();
-        $data["user_id"] = $data["user_id"] ?? auth()->id();
+        $data["user_id"] = auth()->id();
         $dto = PayerDTO::fromRequest($data);
         $result = $this->payerService->createPayer($dto);
         return $this->success($result->toArray(), 'Payer Created Successful..');

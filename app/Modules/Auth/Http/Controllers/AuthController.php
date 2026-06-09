@@ -13,14 +13,12 @@ use App\Modules\Auth\Http\Requests\DisableMfaRequest;
 use App\Modules\Auth\Http\Requests\LoginRequest;
 use App\Modules\Auth\Http\Requests\MfaVerifyRequest;
 use App\Modules\Auth\Services\AuthService;
-use App\Traits\ApiResponse;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 
 class AuthController extends Controller
 {
-    use ApiResponse;
 
     public function __construct(
         private readonly AuthService $authService,

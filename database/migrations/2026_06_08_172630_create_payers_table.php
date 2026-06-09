@@ -18,16 +18,16 @@ return new class extends Migration
             // Type
             $table->enum('file_type', ['Individual', 'Business'])->comment('Type: Individual or Business');
 
-            $table->string('name', 100)->nullable()->comment('Individual: Full Name / Business: Business Name');
+            $table->string('name', 100)->comment('Individual: Full Name / Business: Business Name');
             // ── INDIVIDUAL fields ──────────────────────────────────────
             $table->string('first_name', 100)->nullable()->comment('Individual: First Name');
             $table->string('middle_name', 100)->nullable()->comment('Individual: Middle Name');
-            $table->string('last_name', 100)->nullable()->comment('Individual: Last Name / Business Name');
+            $table->string('last_name', 100)->comment('Individual: Last Name / Business Name');
             $table->enum('suffix', ['Jr', 'Sr', '2nd', 'C3rd', 'II','III', 'IV', 'V', 'VI'])->nullable()->comment('Individual: Suffix e.g. Jr, Sr, II');
 
             // ── ID Number ─────────────────────────────────────────
-            $table->enum('id_type', ['SSN', 'EIN'])->nullable()->comment('ID Type: SSN for Individual, EIN for Business');
-            $table->string('id_number', 11)->nullable()->comment('Individual: SSN (###-##-####) / Business: EIN (##-#######)');
+            $table->enum('id_type', ['SSN', 'EIN'])->comment('ID Type: SSN for Individual, EIN for Business');
+            $table->string('id_number', 11)->comment('Individual: SSN (###-##-####) / Business: EIN (##-#######)');
 
             // ── Shared basic info ──────────────────────────────────────
             $table->string('email', 255)->nullable()->comment('Email Address');
@@ -35,12 +35,12 @@ return new class extends Migration
             $table->string('disregarded_entity', 200)->nullable()->comment('Disregarded Entity');
 
             // ── Address ────────────────────────────────────────────────
-            $table->string('address_one', 255)->nullable()->comment('Address Line 1');
+            $table->string('address_one', 255)->comment('Address Line 1');
             $table->string('address_two', 255)->nullable()->comment('Address Line 2 (Optional)');
-            $table->string('city', 100)->nullable()->comment('City');
+            $table->string('city', 100)->comment('City');
             $table->char('state', 2)->nullable()->comment('State: 2-letter code');
             $table->string('zip_code', 10)->nullable()->comment('ZipCode: supports ZIP+4');
-            $table->char('country', 2)->nullable()->default('US')->comment('Country: ISO 3166-1 alpha-2');
+            $table->char('country', 2)->default('US')->comment('Country: ISO 3166-1 alpha-2');
             $table->boolean('is_foreign_address')->default(false)->comment('Click here for foreign address');
 
             // ── Optional Information ───────────────────────────────────

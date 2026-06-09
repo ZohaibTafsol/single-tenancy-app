@@ -7,13 +7,11 @@ use App\Modules\Recipient\DTOs\RecipientDTO;
 use App\Modules\Recipient\Exceptions\RecipientNotFoundException;
 use App\Modules\Recipient\Http\Requests\RecipientRequest;
 use App\Modules\Recipient\Services\RecipientService;
-use App\Traits\ApiResponse;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Str;
 
 class RecipientController extends Controller
 {
-    use ApiResponse;
 
     public function __construct(
         private readonly RecipientService $RecipientService,
