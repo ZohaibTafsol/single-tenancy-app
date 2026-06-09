@@ -32,7 +32,11 @@ class PayerController extends Controller
         $result = $this->payerService->createPayer($dto);
         return $this->success($result->toArray(), 'Payer Created Successful..');
     }
-
+    public function show(string $uuid): JsonResponse
+    {
+        $payer = $this->payerService->getPayerByUuid($uuid);
+        return $this->success($payer, "Payer found");
+    }
     public function update(UpdatePayerRequest $request, int $id): JsonResponse
     {
         try {

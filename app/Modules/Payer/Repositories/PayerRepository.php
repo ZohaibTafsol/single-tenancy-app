@@ -44,7 +44,7 @@ class PayerRepository implements PayerRepositoryContract
     {
         $payer->delete();
     }
-    public function findByUuid(string $uuid): Payer
+    public function findByUuid(string $uuid): ?Payer
     {
         return Payer::where("uuid", $uuid)->first();
     }

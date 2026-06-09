@@ -26,6 +26,15 @@ class PayerService
         return $this->createPayerAction->execute($dto);
     }
 
+    public function getPayerByUuid(string $uuid): Payer
+    {
+        $payer = $this->payerRepository->findByUuid($uuid);
+        if (! $payer) {
+            throw new PayerNotFoundException($uuid);
+        }
+        return $payer;
+    }
+
     public function update(int $id, PayerDTO $dto): Payer
     {
         return DB::transaction(function () use ($id, $dto) {

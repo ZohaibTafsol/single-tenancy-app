@@ -7,7 +7,7 @@ use App\Modules\Payer\DTOs\PayerDTO;
 
 interface PayerRepositoryContract
 {
-    public function findByUuid(string $uuid);
+    public function findByUuid(string $uuid): ?Payer;
     public function findById(int $id): ?Payer;
     public function getPayers(array $filter_params = []);
     public function create(PayerDTO $dto): Payer;
