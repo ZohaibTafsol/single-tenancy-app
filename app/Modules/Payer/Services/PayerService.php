@@ -16,7 +16,10 @@ class PayerService
         private readonly UpdatePayerAction $updatePayerAction,
         private readonly PayerRepositoryContract $payerRepository,
     ) {}
-
+    public function getPayers(array $filter_params = []): array
+    {
+        return $this->payerRepository->getPayers($filter_params);
+    }
     public function store(PayerDTO $dto): Payer
     {
         return $this->storePayerAction->execute($dto);

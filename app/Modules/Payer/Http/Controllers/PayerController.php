@@ -5,26 +5,28 @@ namespace App\Modules\Payer\Http\Controllers;
 use App\Http\Controllers\Controller;
 use App\Modules\Payer\DTOs\PayerDTO;
 use App\Modules\Payer\Exceptions\PayerNotFoundException;
-use App\Modules\Payer\Http\Requests\PayerRequest;
+use App\Modules\Payer\Http\Requests\CreatePayerRequest;
+use App\Modules\Payer\Http\Requests\UpdatePayerRequest;
 use App\Modules\Payer\Services\PayerService;
 use App\Traits\ApiResponse;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Str;
+use Illuminate\Http\Request;
 
 class PayerController extends Controller
 {
     use ApiResponse;
     public function __construct(
         private readonly PayerService $payerService,
-    ) {
-    }
+    ) {}
 
-    public function index(){
-        $payer = $this->payerService->getPayers();
+    // filter and pagination 
+    public function index(Request $request): JsonResponse{
+        $filter_params = $request->only(['name', 'email']);
+        $payer = $this->payerService->getPayers($filter_params);
         return $this->success($payer, "Payer found");
     }
 
-    public function store(PayerRequest $request): JsonResponse
+    public function store(CreatePayerRequest $request): JsonResponse
     {
         $data = $request->validated();
         $dto = PayerDTO::fromRequest($data);
@@ -32,7 +34,7 @@ class PayerController extends Controller
         return $this->success($result->toArray(), 'Payer Created Successful..');
     }
 
-    public function update(PayerRequest $request, int $id): JsonResponse
+    public function update(UpdatePayerRequest $request, int $id): JsonResponse
     {
         try {
             $dto = PayerDTO::fromRequest($request->validated());

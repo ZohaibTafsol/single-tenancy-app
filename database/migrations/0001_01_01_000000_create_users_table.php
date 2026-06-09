@@ -20,7 +20,7 @@ return new class extends Migration
             $table->string('password');
             $table->string("tenant_id")->index()->nullable();
             $table->text('google2fa_secret')->nullable();
-            $table->string('mfa_enabled')->default(1);
+            $table->string('mfa_enabled')->default(0);
             $table->timestamp("locked_until")->nullable();
             $table->integer("failed_login_attempts")->default(0);
             $table->rememberToken();
