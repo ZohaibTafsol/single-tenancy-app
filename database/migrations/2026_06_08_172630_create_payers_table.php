@@ -23,7 +23,7 @@ return new class extends Migration
             $table->string('first_name', 100)->nullable()->comment('Individual: First Name');
             $table->string('middle_name', 100)->nullable()->comment('Individual: Middle Name');
             $table->string('last_name', 100)->nullable()->comment('Individual: Last Name / Business Name');
-            $table->string('suffix', 20)->nullable()->comment('Individual: Suffix e.g. Jr, Sr, II');
+            $table->enum('suffix', ['Jr', 'Sr', 'II', 'III', 'IV'])->nullable()->comment('Individual: Suffix e.g. Jr, Sr, II');
 
             // ── ID Number ─────────────────────────────────────────
             $table->string('Id_number', 11)->nullable()->comment('Individual: SSN (###-##-####) / Business: EIN (##-#######)');

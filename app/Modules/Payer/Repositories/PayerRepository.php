@@ -1,6 +1,8 @@
 <?php
+
 namespace App\Modules\Payer\Repositories;
-use App\Models\Payer;
+
+use App\Modules\Payer\Models\Payer;
 use App\Modules\Payer\Contracts\PayerRepositoryContract;
 use App\Modules\Payer\DTOs\PayerDTO;
 
@@ -19,7 +21,25 @@ class PayerRepository implements PayerRepositoryContract
         $payer->update($this->toArray($dto));
         return $payer->fresh();
     }
+    public function getPayers(array $filter_params = []): array
+    {
+        $query = Payer::query();
 
+        if (isset($filter_params['name'])) {
+            $query->where('name', 'like', '%' . $filter_params['name'] . '%');
+        }
+
+        if (isset($filter_params['email'])) {
+            $query->where('email', 'like', '%' . $filter_params['email'] . '%');
+        }
+
+        return $query->get()->toArray();
+    }
+    public function updateStatus(): Payer
+    {
+        // Implement status update logic if needed
+        return new Payer(); // Placeholder return
+    }
     public function delete(Payer $payer): void
     {
         $payer->delete();

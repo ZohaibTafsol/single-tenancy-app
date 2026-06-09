@@ -9,7 +9,7 @@ class CreatePayerRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return auth()->check() && auth()->user()->hasPermission('payers.create');
+        return auth()->user()->hasPermissionTo('payers.create');
     }
 
     public function rules(): array

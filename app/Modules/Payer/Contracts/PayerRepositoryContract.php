@@ -2,7 +2,7 @@
 
 namespace App\Modules\Payer\Contracts;
 
-use App\Models\Payer;
+use App\Modules\Payer\Models\Payer;
 use App\Modules\Payer\DTOs\PayerDTO;
 
 interface PayerRepositoryContract
