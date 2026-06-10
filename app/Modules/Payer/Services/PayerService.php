@@ -3,8 +3,7 @@
 namespace App\Modules\Payer\Services;
 
 use App\Modules\Payer\Models\Payer;
-use App\Modules\Payer\Actions\CreatePayerAction;
-use App\Modules\Payer\Actions\UpdatePayerAction;
+use App\Modules\Payer\Actions\{CreatePayerAction, UpdatePayerAction, UpdatePayerStatusAction};
 use App\Modules\Payer\Contracts\PayerRepositoryContract;
 use App\Modules\Payer\DTOs\PayerDTO;
 use Illuminate\Support\Facades\DB;
@@ -15,6 +14,7 @@ class PayerService
     public function __construct(
         private readonly CreatePayerAction  $createPayerAction,
         private readonly UpdatePayerAction $updatePayerAction,
+        private readonly UpdatePayerStatusAction $updatePayerStatusAction,
         private readonly PayerRepositoryContract $payerRepository,
     ) {}
     public function getPayers(array $filter_params = [])
@@ -40,11 +40,14 @@ class PayerService
 
     public function update(string $uuid, PayerDTO $dto): Payer
     {
-        return DB::transaction(function () use ($uuid, $dto) {
-            return $this->updatePayerAction->execute($uuid, $dto);
+        return $this->updatePayerAction->execute($uuid, $dto);
+    }
+    public function updateStatus(string $uuid, bool $isActive): Payer
+    {
+        return DB::transaction(function () use ($uuid, $isActive) {
+            return $this->updatePayerStatusAction->execute($uuid, $isActive);
         });
     }
-
     public function delete(string $uuid): void
     {
         $payer = $this->payerRepository->findByUuid($uuid);

@@ -22,12 +22,12 @@ class RolesAndPermissionsSeeder extends Seeder
         $permissions = [
             'users.view',
             'users.create',
-            'users.edit',
+            'users.update',
             'users.delete',
 
             'roles.view',
             'roles.create',
-            'roles.edit',
+            'roles.update',
             'roles.delete',
 
             'permissions.view',
@@ -40,12 +40,12 @@ class RolesAndPermissionsSeeder extends Seeder
 
             'payers.view',
             'payers.create',
-            'payers.edit',
+            'payers.update',
             'payers.delete',
 
             'receipients.view',
             'receipients.create',
-            'receipients.edit',
+            'receipients.update',
             'receipients.delete',
         ];
 
@@ -61,7 +61,7 @@ class RolesAndPermissionsSeeder extends Seeder
             'manager' => [
                 'users.view',
                 'users.create',
-                'users.edit',
+                'users.update',
                 'invoices.view',
                 'invoices.create',
             ],

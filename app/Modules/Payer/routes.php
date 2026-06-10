@@ -5,3 +5,4 @@ use App\Modules\Payer\Http\Controllers\PayerController;
 
 
 Route::resource('payers', PayerController::class);
+Route::patch('payers/{uuid}/status', [PayerController::class, 'status']);

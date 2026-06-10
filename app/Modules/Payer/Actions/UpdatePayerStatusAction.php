@@ -2,23 +2,26 @@
 
 namespace App\Modules\Payer\Actions;
 
-use App\Modules\Payer\Models\Payer;
 use App\Modules\Payer\Contracts\PayerRepositoryContract;
-use App\Modules\Payer\DTOs\PayerDTO;
 use App\Modules\Payer\Exceptions\PayerNotFoundException;
+use App\Modules\Payer\Models\Payer;
 
-class UpdatePayerAction
+class UpdatePayerStatusAction
 {
     public function __construct(
         private readonly PayerRepositoryContract $payerRepository
-    ){}
+    ) {}
 
-    public function execute(string $uuid, PayerDTO $dto): Payer
+    public function execute(string $uuid, bool $isActive): Payer
     {
         $payer = $this->payerRepository->findByUuid($uuid);
+
         if (! $payer) {
             throw new PayerNotFoundException($uuid);
         }
-        return $this->payerRepository->update($payer, $dto);
+
+        $payer->update(['is_active' => $isActive]);
+
+        return $payer->fresh();
     }
 }

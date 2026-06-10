@@ -5,8 +5,7 @@ namespace App\Modules\Payer\Http\Controllers;
 use App\Http\Controllers\Controller;
 use App\Modules\Payer\DTOs\PayerDTO;
 use App\Modules\Payer\Exceptions\PayerNotFoundException;
-use App\Modules\Payer\Http\Requests\CreatePayerRequest;
-use App\Modules\Payer\Http\Requests\UpdatePayerRequest;
+use App\Modules\Payer\Http\Requests\{CreatePayerRequest, UpdatePayerRequest, UpdatePayerStatusRequest};
 use App\Modules\Payer\Services\PayerService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -35,15 +34,30 @@ class PayerController extends Controller
     }
     public function show(string $uuid): JsonResponse
     {
-        $payer = $this->payerService->getPayerByUuid($uuid);
-        return $this->success($payer, "Payer found");
+        try {
+            $payer = $this->payerService->getPayerByUuid($uuid);
+            return $this->success($payer, "Payer found");
+        } catch (PayerNotFoundException $e) {
+            return $this->error($e->getMessage(), 404);
+        }
     }
     public function update(UpdatePayerRequest $request, string $uuid): JsonResponse
     {
         try {
-            $dto = PayerDTO::fromRequest($request->validated());
+            $data = $request->validated();
+            $data["user_id"] = auth()->id();
+            $dto = PayerDTO::fromRequest($data);
             $result = $this->payerService->update($uuid, $dto);
             return $this->success($result->toArray(), 'Payer Updated Successful..');
+        } catch (PayerNotFoundException $e) {
+            return $this->error($e->getMessage(), 404);
+        }
+    }
+    public function status(UpdatePayerStatusRequest $request, string $uuid): JsonResponse
+    {
+        try {
+            $result = $this->payerService->updateStatus($uuid, $request->boolean('is_active'));
+            return $this->success($result->toArray(), 'Payer status updated.');
         } catch (PayerNotFoundException $e) {
             return $this->error($e->getMessage(), 404);
         }
