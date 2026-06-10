@@ -30,12 +30,10 @@ class UpdatePayerRequest extends FormRequest
 
             'name' => [$isBusiness ? 'required' : 'nullable', 'string', 'max:100'],
 
-            'first_name'  => $isIndividual ? ['nullable', 'string', 'max:100']  : ['prohibited'],
-            'middle_name' => $isIndividual ? ['nullable', 'string', 'max:100']  : ['prohibited'],
-            'last_name'   => $isIndividual ? ['required', 'string', 'max:100']  : ['prohibited'],
-            'suffix'      => $isIndividual
-                ? ['nullable', 'string', Rule::in(PayerConstants::SUFFIXES)]
-                : ['prohibited'],
+            'first_name'  => ['nullable', 'string', 'max:100'],
+            'middle_name' => ['nullable', 'string', 'max:100'],
+            'last_name'   => ['required', 'string', 'max:100'],
+            'suffix'      => ['nullable', 'string', Rule::in(PayerConstants::SUFFIXES)],
 
             'id_type'   => ['required', Rule::in([PayerConstants::ID_TYPE_SSN, PayerConstants::ID_TYPE_EIN])],
             'id_number' => [

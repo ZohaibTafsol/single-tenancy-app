@@ -18,7 +18,7 @@ class CreatePayerRequest extends FormRequest
     public function rules(): array
     {
         $isIndividual = $this->input('file_type') === PayerConstants::FILE_TYPE_INDIVIDUAL;
-        $isBusiness   = $this->input('file_type') === PayerConstants::FILE_TYPE_BUSINESS;
+        // $isBusiness   = $this->input('file_type') === PayerConstants::FILE_TYPE_BUSINESS;
         $isForeign    = $this->boolean('is_foreign_address');
 
         return [
