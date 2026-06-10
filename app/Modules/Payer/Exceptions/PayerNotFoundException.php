@@ -6,7 +6,7 @@ use Exception;
 
 class PayerNotFoundException extends Exception
 {
-    public function __construct(?int $id = null)
+    public function __construct(?string $id = null)
     {
         $message = $id
             ? "Payer with ID {$id} not found."
