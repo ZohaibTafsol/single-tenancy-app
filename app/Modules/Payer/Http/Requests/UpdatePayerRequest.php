@@ -5,6 +5,7 @@ namespace App\Modules\Payer\Http\Requests;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 use App\Modules\Payer\Http\Requests\Concerns\HasPayerValidation;
+use App\Modules\Payer\Constants\PayerConstants;
 
 class UpdatePayerRequest extends FormRequest
 {
@@ -16,8 +17,8 @@ class UpdatePayerRequest extends FormRequest
 
     public function rules(): array
     {
-        $isIndividual = $this->input('file_type') === 'Individual';
-        $isBusiness   = $this->input('file_type') === 'Business';
+        $isIndividual = $this->input('file_type') === PayerConstants::FILE_TYPE_INDIVIDUAL;
+        $isBusiness   = $this->input('file_type') === PayerConstants::FILE_TYPE_BUSINESS;
         $isForeign    = $this->boolean('is_foreign_address');
 
         // Resolve the payer being updated from the route parameter.
@@ -25,7 +26,7 @@ class UpdatePayerRequest extends FormRequest
         $payerUuid = $this->route('uuid');
 
         return [
-            'file_type' => ['required', Rule::in(['Individual', 'Business'])],
+            'file_type' => ['required', Rule::in([PayerConstants::FILE_TYPE_INDIVIDUAL, PayerConstants::FILE_TYPE_BUSINESS])],
 
             'name' => [$isBusiness ? 'required' : 'nullable', 'string', 'max:100'],
 
@@ -33,10 +34,10 @@ class UpdatePayerRequest extends FormRequest
             'middle_name' => $isIndividual ? ['nullable', 'string', 'max:100']  : ['prohibited'],
             'last_name'   => $isIndividual ? ['required', 'string', 'max:100']  : ['prohibited'],
             'suffix'      => $isIndividual
-                ? ['nullable', 'string', Rule::in(['Jr', 'Sr', '2nd', 'C3rd', 'II', 'III', 'IV', 'V', 'VI'])]
+                ? ['nullable', 'string', Rule::in(PayerConstants::SUFFIXES)]
                 : ['prohibited'],
 
-            'id_type'   => ['required', Rule::in(['SSN', 'EIN'])],
+            'id_type'   => ['required', Rule::in([PayerConstants::ID_TYPE_SSN, PayerConstants::ID_TYPE_EIN])],
             'id_number' => [
                 'required',
                 'string',

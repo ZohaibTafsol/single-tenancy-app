@@ -5,6 +5,8 @@ namespace App\Modules\Payer\Repositories;
 use App\Modules\Payer\Models\Payer;
 use App\Modules\Payer\Contracts\PayerRepositoryContract;
 use App\Modules\Payer\DTOs\PayerDTO;
+use App\Modules\Payer\Constants\PayerConstants;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
 class PayerRepository implements PayerRepositoryContract
 {
@@ -21,7 +23,7 @@ class PayerRepository implements PayerRepositoryContract
         $payer->update($dto->toArray());
         return $payer->fresh();
     }
-    public function getPayers(array $filter_params = []) : \Illuminate\Contracts\Pagination\LengthAwarePaginator
+    public function getPayers(array $filter_params = []): LengthAwarePaginator
     {
         $query = Payer::query();
 
@@ -37,7 +39,7 @@ class PayerRepository implements PayerRepositoryContract
             $query->where('user_id', $filter_params['user_id']);
         }
 
-        return $query->paginate(10);
+        return $query->paginate(PayerConstants::PER_PAGE);
     }
     public function updateStatus(Payer $payer, bool $isActive): Payer
     {

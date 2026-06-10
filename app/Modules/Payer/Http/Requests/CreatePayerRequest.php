@@ -5,6 +5,7 @@ namespace App\Modules\Payer\Http\Requests;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 use App\Modules\Payer\Http\Requests\Concerns\HasPayerValidation;
+use App\Modules\Payer\Constants\PayerConstants;
 
 class CreatePayerRequest extends FormRequest
 {
@@ -16,13 +17,13 @@ class CreatePayerRequest extends FormRequest
 
     public function rules(): array
     {
-        $isIndividual = $this->input('file_type') === 'Individual';
-        $isBusiness   = $this->input('file_type') === 'Business';
+        $isIndividual = $this->input('file_type') === PayerConstants::FILE_TYPE_INDIVIDUAL;
+        $isBusiness   = $this->input('file_type') === PayerConstants::FILE_TYPE_BUSINESS;
         $isForeign    = $this->boolean('is_foreign_address');
 
         return [
             // ── Type ──────────────────────────────────────────────────
-            'file_type' => ['required', Rule::in(['Individual', 'Business'])],
+            'file_type' => ['required', Rule::in([PayerConstants::FILE_TYPE_INDIVIDUAL, PayerConstants::FILE_TYPE_BUSINESS])],
 
             // ── Name ──────────────────────────────────────────────────
             // Business: required as the primary display name
@@ -42,11 +43,11 @@ class CreatePayerRequest extends FormRequest
                 ? ['required', 'string', 'max:100']
                 : ['prohibited'],
             'suffix'      => $isIndividual
-                ? ['nullable', 'string', Rule::in(['Jr', 'Sr', '2nd', 'C3rd', 'II', 'III', 'IV', 'V', 'VI'])]
+                ? ['nullable', 'string', Rule::in(PayerConstants::SUFFIXES)]
                 : ['prohibited'],
 
             // ── ID Number (SSN for Individual, EIN for Business) ──────
-            'id_type' => ['required', Rule::in(['SSN', 'EIN'])],
+            'id_type' => ['required', Rule::in([PayerConstants::ID_TYPE_SSN, PayerConstants::ID_TYPE_EIN])],
 
             // Stored in a single `id_number` column; format differs by type.
             'id_number' => [
