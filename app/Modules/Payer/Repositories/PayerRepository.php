@@ -39,10 +39,12 @@ class PayerRepository implements PayerRepositoryContract
 
         return $query->paginate(10);
     }
-    public function updateStatus(): Payer
+    public function updateStatus(Payer $payer, bool $isActive): Payer
     {
         // Implement status update logic if needed
-        return new Payer(); // Placeholder return
+        $payer->is_active = $isActive;
+        $payer->save();
+        return $payer->fresh();
     }
     public function delete(Payer $payer): void
     {

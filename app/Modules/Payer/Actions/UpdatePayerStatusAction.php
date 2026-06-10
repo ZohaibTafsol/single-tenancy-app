@@ -19,9 +19,6 @@ class UpdatePayerStatusAction
         if (! $payer) {
             throw new PayerNotFoundException($uuid);
         }
-
-        $payer->update(['is_active' => $isActive]);
-
-        return $payer->fresh();
+        return $this->payerRepository->updateStatus($payer, $isActive);
     }
 }

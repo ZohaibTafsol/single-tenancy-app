@@ -11,7 +11,7 @@ interface PayerRepositoryContract
     public function findById(int $id): ?Payer;
     public function getPayers(array $filter_params = []);
     public function create(PayerDTO $dto): Payer;
-    public function updateStatus(): Payer;
+    public function updateStatus(Payer $payer, bool $isActive): Payer;
     public function update(Payer $payer, PayerDTO $dto): Payer;
     public function delete(Payer $payer): void;
 }
