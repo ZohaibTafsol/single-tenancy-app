@@ -2,6 +2,8 @@
 
 namespace App\Modules\Payer\Http\Requests\Concerns;
 
+use App\Modules\Payer\Constants\PayerConstants;
+
 trait HasPayerValidation
 {
     public function messages(): array
@@ -34,6 +36,8 @@ trait HasPayerValidation
             'zip_code.regex'         => 'Enter a valid zip code (e.g. 85001 or 85001-1234).',
             'country.required'       => 'Country is required.',
             'country.size'           => 'Country must be a 2-letter ISO code (e.g. US).',
+            'suffix.in'              => 'Suffix must be in: ' . implode(', ', PayerConstants::SUFFIXES),
+            'id_type'                => "ID type must be in: " . implode(', ', PayerConstants::ID_TYPES),
 
             'payer_detail_id.unique' => 'This payer detail ID is already registered.',
         ];

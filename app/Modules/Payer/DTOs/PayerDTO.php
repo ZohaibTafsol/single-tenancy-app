@@ -58,7 +58,7 @@ class PayerDTO
             // Individual
             $data['first_name'] ?? null,
             $data['middle_name'] ?? null,
-            $data['last_name'] ?? null,
+            $data['last_name'],
             $data['suffix'] ?? null,
 
             // ID

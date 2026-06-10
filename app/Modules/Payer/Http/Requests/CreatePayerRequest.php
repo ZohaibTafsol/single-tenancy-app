@@ -28,23 +28,15 @@ class CreatePayerRequest extends FormRequest
             // ── Name ──────────────────────────────────────────────────
             // Business: required as the primary display name
             // Individual: optional composite (first+last used instead)
-            'name' => [$isBusiness ? 'required' : 'nullable', 'string', 'max:100'],
+            // 'name' => [$isBusiness ? 'required' : 'nullable', 'string', 'max:100'],
 
             // ── Individual-only fields ────────────────────────────────
             // 'prohibited' must be the only rule when blocking a field;
             // trailing type/length rules would still fire on prohibited fields.
-            'first_name'  => $isIndividual
-                ? ['nullable', 'string', 'max:100']
-                : ['prohibited'],
-            'middle_name' => $isIndividual
-                ? ['nullable', 'string', 'max:100']
-                : ['prohibited'],
-            'last_name'   => $isIndividual
-                ? ['required', 'string', 'max:100']
-                : ['prohibited'],
-            'suffix'      => $isIndividual
-                ? ['nullable', 'string', Rule::in(PayerConstants::SUFFIXES)]
-                : ['prohibited'],
+            'first_name'  => ['nullable', 'string', 'max:100'],
+            'middle_name' => ['nullable', 'string', 'max:100'],
+            'last_name'   => ['required', 'string', 'max:100'],
+            'suffix'      => ['nullable', 'string', Rule::in(PayerConstants::SUFFIXES)],
 
             // ── ID Number (SSN for Individual, EIN for Business) ──────
             'id_type' => ['required', Rule::in([PayerConstants::ID_TYPE_SSN, PayerConstants::ID_TYPE_EIN])],
