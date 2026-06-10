@@ -21,7 +21,7 @@ class PayerRepository implements PayerRepositoryContract
         $payer->update($dto->toArray());
         return $payer->fresh();
     }
-    public function getPayers(array $filter_params = [])
+    public function getPayers(array $filter_params = []) : \Illuminate\Contracts\Pagination\LengthAwarePaginator
     {
         $query = Payer::query();
 
@@ -31,6 +31,10 @@ class PayerRepository implements PayerRepositoryContract
 
         if (isset($filter_params['email'])) {
             $query->where('email', 'like', '%' . $filter_params['email'] . '%');
+        }
+
+        if (isset($filter_params['user_id'])) {
+            $query->where('user_id', $filter_params['user_id']);
         }
 
         return $query->paginate(10);

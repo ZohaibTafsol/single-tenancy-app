@@ -17,8 +17,11 @@ class PayerService
         private readonly UpdatePayerAction $updatePayerAction,
         private readonly PayerRepositoryContract $payerRepository,
     ) {}
-    public function getPayers(array $filter_params = []) 
+    public function getPayers(array $filter_params = [])
     {
+        if (!auth()->user()->hasRole('admin')) {
+            $filter_params['user_id'] = auth()->id();
+        }
         return $this->payerRepository->getPayers($filter_params);
     }
     public function createPayer(PayerDTO $dto): Payer
@@ -35,21 +38,19 @@ class PayerService
         return $payer;
     }
 
-    public function update(int $id, PayerDTO $dto): Payer
+    public function update(string $uuid, PayerDTO $dto): Payer
     {
-        return DB::transaction(function () use ($id, $dto) {
-            return $this->updatePayerAction->execute($id, $dto);
+        return DB::transaction(function () use ($uuid, $dto) {
+            return $this->updatePayerAction->execute($uuid, $dto);
         });
     }
 
-    public function delete(int $id): void
+    public function delete(string $uuid): void
     {
-        $payer = $this->payerRepository->findById($id);
-
+        $payer = $this->payerRepository->findByUuid($uuid);
         if (! $payer) {
-            throw new PayerNotFoundException($id);
+            throw new PayerNotFoundException($uuid);
         }
-
         $this->payerRepository->delete($payer);
     }
 }

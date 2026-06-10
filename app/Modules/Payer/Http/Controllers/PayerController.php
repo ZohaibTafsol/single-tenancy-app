@@ -18,7 +18,8 @@ class PayerController extends Controller
     ) {}
 
     // filter and pagination 
-    public function index(Request $request): JsonResponse{
+    public function index(Request $request): JsonResponse
+    {
         $filter_params = $request->only(['name', 'email']);
         $payer = $this->payerService->getPayers($filter_params);
         return $this->success($payer, "Payer found");
@@ -37,26 +38,24 @@ class PayerController extends Controller
         $payer = $this->payerService->getPayerByUuid($uuid);
         return $this->success($payer, "Payer found");
     }
-    public function update(UpdatePayerRequest $request, int $id): JsonResponse
+    public function update(UpdatePayerRequest $request, string $uuid): JsonResponse
     {
         try {
             $dto = PayerDTO::fromRequest($request->validated());
-            $result = $this->payerService->update($id, $dto);
+            $result = $this->payerService->update($uuid, $dto);
             return $this->success($result->toArray(), 'Payer Updated Successful..');
         } catch (PayerNotFoundException $e) {
             return $this->error($e->getMessage(), 404);
         }
     }
 
-    public function destroy(int $id): JsonResponse
+    public function destroy(string $uuid): JsonResponse
     {
         try {
-            $this->payerService->delete($id);
+            $this->payerService->delete($uuid);
             return $this->success('Payer Deleted Successful..');
-
         } catch (PayerNotFoundException $e) {
             return $this->error($e->getMessage(), 404);
-
         }
     }
 }
