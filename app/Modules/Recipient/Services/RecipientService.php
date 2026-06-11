@@ -2,12 +2,13 @@
 
 namespace App\Modules\Recipient\Services;
 
-use App\Models\Recipient;
+use App\Modules\Recipient\Models\Recipient;
 use App\Modules\Recipient\Actions\StoreRecipientAction;
 use App\Modules\Recipient\Actions\UpdateRecipientAction;
 use App\Modules\Recipient\Contracts\RecipientRepositoryContract;
 use App\Modules\Recipient\DTOs\RecipientDTO;
 use App\Modules\Recipient\Exceptions\RecipientNotFoundException;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
 class RecipientService
 {
@@ -17,6 +18,11 @@ class RecipientService
         private readonly RecipientRepositoryContract $RecipientRepository,
     ) {}
 
+    public function getRecipients(array $filterData): LengthAwarePaginator
+    {
+        $filterData['user_id'] = auth()->id();
+        return $this->RecipientRepository->getRecipients($filterData);
+    }
     public function store(RecipientDTO $dto): Recipient
     {
         return $this->storeRecipientAction->execute($dto);

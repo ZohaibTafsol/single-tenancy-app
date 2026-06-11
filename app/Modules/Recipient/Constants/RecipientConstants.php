@@ -2,7 +2,7 @@
 
 namespace App\Modules\Recipient\Constants;
 
-class RecipientConstants
+final class RecipientConstants
 {
     public const SUFFIXES = ['Jr', 'Sr', '2nd', '3rd', 'II', 'III', 'IV', 'V', 'VI'];
 
@@ -11,4 +11,6 @@ class RecipientConstants
     public const FILE_TYPES = ['Individual', 'Business'];
 
     public const EMAIL_LANGUAGES = ['en', 'es', 'fr', 'de', 'zh', 'ja', 'pt', 'it'];
+
+    public const PER_PAGE = 10;
 }

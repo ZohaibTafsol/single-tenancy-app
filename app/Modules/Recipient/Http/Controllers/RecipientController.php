@@ -9,19 +9,26 @@ use App\Modules\Recipient\Http\Requests\RecipientRequest;
 use App\Modules\Recipient\Services\RecipientService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Str;
+use Illuminate\Http\Request;
 
 class RecipientController extends Controller
 {
 
     public function __construct(
-        private readonly RecipientService $RecipientService,
-    ) {
+        private readonly RecipientService $recipientService,
+    ) {}
+
+    public function index(Request $request): JsonResponse
+    {
+        $filter_params = $request->only(['name', 'email', 'tax_id', 'client_id']);
+        $recipients = $this->recipientService->getRecipients($filter_params);
+        return $this->success($recipients, "Recipients found");
     }
     public function store(RecipientRequest $request): JsonResponse
     {
         $data = $request->validated();
         $dto = RecipientDTO::fromRequest($data);
-        $result = $this->RecipientService->store($dto);
+        $result = $this->recipientService->store($dto);
         return $this->success($result->toArray(), 'Recipient Created Successful..');
     }
 
@@ -29,24 +36,20 @@ class RecipientController extends Controller
     {
         try {
             $dto = RecipientDTO::fromRequest($request->validated());
-            $result = $this->RecipientService->update($id, $dto);
+            $result = $this->recipientService->update($id, $dto);
             return $this->success($result->toArray(), 'Recipient Updated Successful..');
-
         } catch (RecipientNotFoundException $e) {
             return $this->error('Recipient not found', 404, $e->getMessage());
-
         }
     }
 
     public function destroy(int $id): JsonResponse
     {
         try {
-            $this->RecipientService->delete($id);
+            $this->recipientService->delete($id);
             return $this->success('Recipient Deleted Successful..');
-
         } catch (RecipientNotFoundException $e) {
             return $this->error('Recipient not found', 404, $e->getMessage());
-
         }
     }
 }
