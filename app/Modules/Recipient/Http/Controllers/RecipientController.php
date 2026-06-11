@@ -29,7 +29,7 @@ class RecipientController extends Controller
     {
         $data = $request->validated();
         $dto = RecipientDTO::fromRequest($data);
-        return response()->json($dto);
+        return response()->json($dto->toArray());
         $result = $this->recipientService->store($dto);
         return $this->success($result->toArray(), 'Recipient Created Successful..');
     }

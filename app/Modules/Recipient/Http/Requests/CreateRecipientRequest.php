@@ -23,6 +23,7 @@ class CreateRecipientRequest extends FormRequest
         $w8orW9         = $this->boolean('w8_request', false) || $this->boolean('w9_request', false);
 
         return [
+            'payer_uuid' => ['required', 'uuid', Rule::exists('payers', 'uuid')->where('user_id', auth()->id())],
 
             // ── Recipient type ────────────────────────────────────────────
             'file_type' => ['required', Rule::in(RecipientConstants::FILE_TYPES)],
@@ -44,7 +45,7 @@ class CreateRecipientRequest extends FormRequest
                 'max:255',
             ],
 
-            'suffix'        => ['nullable', 'string', 'max:20'],
+            'suffix'        => ['nullable', 'string', 'max:20', Rule::in(RecipientConstants::SUFFIXES)],
             'attention_to'  => ['nullable', 'string', 'max:255'],
 
             // ── TIN ───────────────────────────────────────────────────────
@@ -54,6 +55,7 @@ class CreateRecipientRequest extends FormRequest
                 'nullable',
                 'string',
                 'max:20',
+                'regex:/^\d{3}-\d{2}-\d{4}$/'
             ],
             'tin_not_provided' => ['boolean'],
 
@@ -71,13 +73,13 @@ class CreateRecipientRequest extends FormRequest
             'validate_address'  => ['boolean'],
             'foreign_address'   => ['boolean'],
 
-            'address_line_1' => [
+            'address_one' => [
                 ($isIndividual || $isBusiness) ? 'required' : 'nullable',
                 'nullable',
                 'string',
                 'max:255',
             ],
-            'address_line_2' => ['nullable', 'string', 'max:255'],
+            'address_two' => ['nullable', 'string', 'max:255'],
 
             // City: required for individual/business; also required when W-8/W-9
             // selected; also required when foreign address is checked
@@ -157,13 +159,14 @@ class CreateRecipientRequest extends FormRequest
             'last_name.required'             => $this->input('file_type') === RecipientConstants::FILE_TYPE_BUSINESS
                 ? 'Business name is required.'
                 : 'Last name is required.',
-
+            'suffix.in'                     => 'Suffix must be one of: ' . implode(', ', RecipientConstants::SUFFIXES),
             'recipient_tin.required'         => 'Recipient TIN is required unless "TIN not provided" is checked.',
+            'recipient_tin.regex'            => 'Recipient TIN must be in the format 111-11-1111.',
 
             'email_address.required'         => 'Email address is required when a W-8 or W-9 request is selected.',
             'email_address.email'            => 'Please enter a valid email address.',
 
-            'address_line_1.required'        => 'Address Line 1 is required.',
+            'address_one.required'        => 'Address Line 1 is required.',
             'city.required'                  => 'City is required.',
             'state.required'                 => 'State / Province is required for domestic addresses.',
             'zip_code.required'              => 'Zip / Postal Code is required for domestic addresses.',
@@ -191,8 +194,8 @@ class CreateRecipientRequest extends FormRequest
             'phone_number'          => 'phone number',
             'validate_address'      => 'validate address',
             'foreign_address'       => 'foreign address',
-            'address_line_1'        => 'address line 1',
-            'address_line_2'        => 'address line 2',
+            'address_one'        => 'address line 1',
+            'address_two'        => 'address line 2',
             'city'                  => 'city',
             'state'                 => 'state / province',
             'zip_code'              => 'zip / postal code',

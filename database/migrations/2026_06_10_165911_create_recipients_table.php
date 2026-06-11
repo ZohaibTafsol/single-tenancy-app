@@ -10,11 +10,11 @@ return new class extends Migration
     {
         Schema::create('recipients', function (Blueprint $table) {
             $table->id();
+            $table->uuid('uuid')->unique();
 
             // ── Internal ───────────────────────────────────────────────
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
             $table->foreignId('payer_id')->constrained()->cascadeOnDelete()->comment('The payer this recipient belongs to');
-            $table->uuid('uuid')->unique();
 
             // ── Type ──────────────────────────────────────────────────
             $table->enum('file_type', ['Individual', 'Business'])->default('Individual')->comment('Type: Individual or Business');
@@ -33,7 +33,7 @@ return new class extends Migration
             $table->enum('suffix', ['Jr', 'Sr', '2nd', '3rd', 'II', 'III', 'IV', 'V', 'VI'])->nullable()->comment('Individual: Suffix e.g. Jr, Sr, II');
 
             // ── TIN (Tax Identification Number) ───────────────────────
-            $table->enum('tin_type', ['SSN', 'EIN', 'ITIN', 'ATIN'])->nullable()->comment('TIN Type: SSN/ITIN/ATIN for Individual, EIN for Business');
+            $table->enum('tin_type', ['SSN', 'EIN', 'ITIN', 'ATIN'])->default('SSN')->nullable()->comment('TIN Type: SSN/ITIN/ATIN for Individual, EIN for Business');
             $table->string('tin', 11)->nullable()->comment('Individual: SSN (###-##-####) / Business: EIN (##-#######)');
             $table->boolean('tin_not_provided')->default(false)->comment('Checked when recipient has not provided a TIN');
 
