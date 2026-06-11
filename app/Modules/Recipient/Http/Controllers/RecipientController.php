@@ -5,6 +5,7 @@ namespace App\Modules\Recipient\Http\Controllers;
 use App\Http\Controllers\Controller;
 use App\Modules\Recipient\DTOs\RecipientDTO;
 use App\Modules\Recipient\Exceptions\RecipientNotFoundException;
+use App\Modules\Recipient\Http\Requests\CreateRecipientRequest;
 use App\Modules\Recipient\Http\Requests\RecipientRequest;
 use App\Modules\Recipient\Services\RecipientService;
 use Illuminate\Http\JsonResponse;
@@ -24,10 +25,11 @@ class RecipientController extends Controller
         $recipients = $this->recipientService->getRecipients($filter_params);
         return $this->success($recipients, "Recipients found");
     }
-    public function store(RecipientRequest $request): JsonResponse
+    public function store(CreateRecipientRequest $request): JsonResponse
     {
         $data = $request->validated();
         $dto = RecipientDTO::fromRequest($data);
+        return response()->json($dto);
         $result = $this->recipientService->store($dto);
         return $this->success($result->toArray(), 'Recipient Created Successful..');
     }

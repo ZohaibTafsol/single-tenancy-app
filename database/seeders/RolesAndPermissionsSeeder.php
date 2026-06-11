@@ -43,10 +43,10 @@ class RolesAndPermissionsSeeder extends Seeder
             'payers.update',
             'payers.delete',
 
-            'receipients.view',
-            'receipients.create',
-            'receipients.update',
-            'receipients.delete',
+            'recipients.view',
+            'recipients.create',
+            'recipients.update',
+            'recipients.delete',
         ];
 
         foreach ($permissions as $permission) {

@@ -1,113 +1,206 @@
 <?php
 
-namespace App\Http\Requests;
+namespace App\Modules\Recipient\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 use App\Modules\Recipient\Http\Requests\Concerns\HasRecipientValidation;
+use App\Modules\Recipient\Constants\RecipientConstants;
 
 class CreateRecipientRequest extends FormRequest
 {
     use HasRecipientValidation;
     public function authorize(): bool
     {
-        return auth()->user()->hasPermissionTo('recipient.create');
+        return auth()->user()->hasPermissionTo('recipients.create');
     }
 
     public function rules(): array
     {
-        $isIndividual = $this->input('file_type') === 'Individual';
-        $isForeign    = $this->boolean('is_foreign_address');
-        $tinProvided  = ! $this->boolean('tin_not_provided');
+        $isIndividual   = $this->input('file_type') === RecipientConstants::FILE_TYPE_INDIVIDUAL;
+        $isBusiness     = $this->input('file_type') === RecipientConstants::FILE_TYPE_BUSINESS;
+        $isForeign      = $this->boolean('is_foreign_address');
+        $w8orW9         = $this->boolean('w8_request', false) || $this->boolean('w9_request', false);
 
         return [
 
-            // ── Type ──────────────────────────────────────────────────
-            'file_type' => ['required', Rule::in(['Individual', 'Business'])],
+            // ── Recipient type ────────────────────────────────────────────
+            'file_type' => ['required', Rule::in(RecipientConstants::FILE_TYPES)],
 
-            // ── W-8 / W-9 ─────────────────────────────────────────────
+            // ── W-8 / W-9 request flags ───────────────────────────────────
             'w8_request' => ['sometimes', 'boolean'],
             'w9_request' => ['sometimes', 'boolean'],
 
-            // ── Basic Information ──────────────────────────────────────
-            // Individual fields
-            'first_name'  => [Rule::requiredIf($isIndividual), 'nullable', 'string', 'max:100'],
-            'middle_name' => ['nullable', 'string', 'max:100'],
-            'last_name'   => [Rule::requiredIf($isIndividual), 'nullable', 'string', 'max:100'],
-            'suffix'      => ['nullable', Rule::in(['Jr', 'Sr', '2nd', '3rd', 'II', 'III', 'IV', 'V', 'VI'])],
+            // ── Name fields ───────────────────────────────────────────────
+            // Individual: first_name optional, last_name required
+            // Business  : business_name (mapped to last_name) required
+            'first_name'    => [$isIndividual ? 'sometimes' : 'nullable', 'string', 'max:100'],
+            'middle_name'   => ['nullable', 'string', 'max:100'],
 
-            // Business field
-            'name' => [Rule::requiredIf(! $isIndividual), 'nullable', 'string', 'max:200'],
-
-            // ── TIN ───────────────────────────────────────────────────
-            'tin_not_provided' => ['sometimes', 'boolean'],
-            'tin_type'         => [
-                Rule::requiredIf($tinProvided),
-                'nullable',
-                Rule::in(['SSN', 'EIN', 'ITIN', 'ATIN']),
+            // "last_name" doubles as business_name for business recipients
+            'last_name' => [
+                ($isIndividual || $isBusiness) ? 'required' : 'nullable',
+                'string',
+                'max:255',
             ],
-            'tin' => [
-                Rule::requiredIf($tinProvided),
+
+            'suffix'        => ['nullable', 'string', 'max:20'],
+            'attention_to'  => ['nullable', 'string', 'max:255'],
+
+            // ── TIN ───────────────────────────────────────────────────────
+            // Required for both types unless "TIN not provided" is checked
+            'recipient_tin' => [
+                $this->boolean('tin_not_provided') ? 'nullable' : 'required',
                 'nullable',
                 'string',
-                'max:11',
-                // SSN: 123-45-6789  |  EIN: 12-3456789
-                function (string $attribute, mixed $value, \Closure $fail) use ($isIndividual) {
-                    if (! $value) {
-                        return;
-                    }
-                    $ssnPattern = '/^\d{3}-\d{2}-\d{4}$/';
-                    $einPattern = '/^\d{2}-\d{7}$/';
-
-                    if ($isIndividual && ! preg_match($ssnPattern, $value)) {
-                        $fail('The TIN must be in SSN format: ###-##-####.');
-                    }
-
-                    if (! $isIndividual && ! preg_match($einPattern, $value)) {
-                        $fail('The TIN must be in EIN format: ##-#######.');
-                    }
-                },
+                'max:20',
             ],
+            'tin_not_provided' => ['boolean'],
 
-            // ── Contact ───────────────────────────────────────────────
-            'attention_to'  => ['nullable', 'string', 'max:200'],
-            'email'         => ['nullable', 'email:rfc,dns', 'max:255'],
-            'phone_number'  => ['nullable', 'string', 'max:20'],
+            // ── Contact ───────────────────────────────────────────────────
+            // Email is required when W-8 or W-9 is selected
+            'email_address' => [
+                $w8orW9 ? 'required' : 'nullable',
+                'nullable',
+                'email',
+                'max:255',
+            ],
+            'phone_number'  => ['nullable', 'string', 'max:30'],
 
-            // ── Address ────────────────────────────────────────────────
-            'address_one'       => ['required', 'string', 'max:255'],
-            'address_two'       => ['nullable', 'string', 'max:255'],
-            'city'              => ['required', 'string', 'max:100'],
-            'state'             => [
-                Rule::requiredIf(! $isForeign),
+            // ── Address ───────────────────────────────────────────────────
+            'validate_address'  => ['boolean'],
+            'foreign_address'   => ['boolean'],
+
+            'address_line_1' => [
+                ($isIndividual || $isBusiness) ? 'required' : 'nullable',
                 'nullable',
                 'string',
-                'size:2',
-                'alpha',
+                'max:255',
             ],
+            'address_line_2' => ['nullable', 'string', 'max:255'],
+
+            // City: required for individual/business; also required when W-8/W-9
+            // selected; also required when foreign address is checked
+            'city' => [
+                ($isIndividual || $isBusiness || $w8orW9 || $isForeign) ? 'required' : 'nullable',
+                'nullable',
+                'string',
+                'max:100',
+            ],
+
+            // State/Province: required for domestic individual/business;
+            // optional when foreign address is checked
+            'state' => [
+                (($isIndividual || $isBusiness) && !$isForeign) ? 'required' : 'nullable',
+                'nullable',
+                'string',
+                'max:100',
+            ],
+
+            // Zip/Postal Code: required for domestic individual/business;
+            // optional when foreign address is checked
             'zip_code' => [
-                Rule::requiredIf(! $isForeign),
+                (($isIndividual || $isBusiness) && !$isForeign) ? 'required' : 'nullable',
                 'nullable',
                 'string',
-                'max:10',
-                'regex:/^\d{5}(-\d{4})?$/',
+                'max:20',
             ],
-            'country'            => ['required', 'string', 'size:2', 'alpha'],
-            'is_foreign_address' => ['sometimes', 'boolean'],
 
-            // ── Optional / Client Fields ───────────────────────────────
-            'client_recipient_id' => ['nullable', 'string', 'max:100'],
-            'email_language'      => ['nullable', 'string', 'max:10'],
+            // Country: always required for individual/business;
+            // when foreign address → must NOT be "US"/"USA"
+            'country' => [
+                'required_unless:w8_request,true:w9_request,true:is_foreign_address,true',
+                'string',
+                'max:100',
+                // $isForeign
+                //     ? Rule::notIn(['US', 'USA', 'United States', 'United States of America'])
+                //     : 'sometimes',
+            ],
 
-            // ── 1099 Form Flags ────────────────────────────────────────
-            'account_number'            => ['nullable', 'string', 'max:100'],
-            'second_tin_notice'         => ['nullable', 'string', 'max:10'],
-            'fatca_filing_requirement'  => ['sometimes', 'boolean'],
-            'is_last_filing'            => ['sometimes', 'boolean'],
+            // ── Extra fields ──────────────────────────────────────────────
+            'client_recipient_id' => ['nullable', 'string', 'max:255'],
+            'email_language'      => ['nullable', 'string', Rule::in([
+                'en',
+                'es',
+                'fr',
+                'de',
+                'zh',
+                'ja',
+                'ko',
+                'pt',
+                'ar',
+                // extend with any other supported locale codes
+            ])],
+        ];
+    }
 
-            // ── tax1099 Sync ───────────────────────────────────────────
-            'is_tin_check'          => ['sometimes', 'boolean'],
-            'un_mask_recipient_tin' => ['sometimes', 'boolean'],
+    protected function prepareForValidation(): void
+    {
+        $this->merge([
+            'tin_not_provided'          => $this->boolean('tin_not_provided'),
+            'validate_address'          => $this->boolean('validate_address'),
+            'foreign_address'           => $this->boolean('foreign_address'),
+            'w8_request'                => $this->boolean('w8_request'),
+            'w9_request'                => $this->boolean('w9_request'),
+        ]);
+    }
+
+    /**
+     * Custom validation messages.
+     */
+    public function messages(): array
+    {
+        return [
+            'file_type.required'                 => 'Please select a recipient type (Individual or Business).',
+            'file_type.in'                        => 'Recipient type must be either individual or business.',
+
+            'last_name.required'             => $this->input('file_type') === RecipientConstants::FILE_TYPE_BUSINESS
+                ? 'Business name is required.'
+                : 'Last name is required.',
+
+            'recipient_tin.required'         => 'Recipient TIN is required unless "TIN not provided" is checked.',
+
+            'email_address.required'         => 'Email address is required when a W-8 or W-9 request is selected.',
+            'email_address.email'            => 'Please enter a valid email address.',
+
+            'address_line_1.required'        => 'Address Line 1 is required.',
+            'city.required'                  => 'City is required.',
+            'state.required'                 => 'State / Province is required for domestic addresses.',
+            'zip_code.required'              => 'Zip / Postal Code is required for domestic addresses.',
+            'country.required'               => 'Country is required.',
+            'country.not_in'                 => 'Country must not be USA when "Foreign Address" is checked.',
+            'country.required_unless'        => 'Country is required unless "W-8 request" or "W-9 request" is checked.',
+        ];
+    }
+
+    /**
+     * Human-readable attribute names used in default Laravel messages.
+     */
+    public function attributes(): array
+    {
+        return [
+            'file_type'                  => 'recipient type',
+            'first_name'            => 'first name',
+            'middle_name'           => 'middle name',
+            'last_name'             => 'last name / business name',
+            'suffix'                => 'suffix',
+            'attention_to'          => 'attention to',
+            'recipient_tin'         => 'recipient TIN',
+            'tin_not_provided'      => 'TIN not provided',
+            'email_address'         => 'email address',
+            'phone_number'          => 'phone number',
+            'validate_address'      => 'validate address',
+            'foreign_address'       => 'foreign address',
+            'address_line_1'        => 'address line 1',
+            'address_line_2'        => 'address line 2',
+            'city'                  => 'city',
+            'state'                 => 'state / province',
+            'zip_code'              => 'zip / postal code',
+            'country'               => 'country',
+            'client_recipient_id'   => 'client recipient ID',
+            'email_language'        => 'email language',
+            'w8_request'            => 'W-8 request',
+            'w9_request'            => 'W-9 request',
         ];
     }
 }
