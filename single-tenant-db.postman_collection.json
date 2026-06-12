@@ -1,0 +1,943 @@
+{
+  "info": {
+    "_postman_id": "d84100f9-4c28-4827-ac2b-632aaa95241b",
+    "name": "single-tenant-db",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "30100482",
+    "_collection_link": "https://go.postman.co/collection/30100482-d84100f9-4c28-4827-ac2b-632aaa95241b?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "MFA",
+          "item": [
+            {
+              "name": "Verify",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{temp_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "key": "email",
+                      "value": "admin@tax.com",
+                      "type": "text"
+                    },
+                    {
+                      "key": "password",
+                      "value": "123123123",
+                      "type": "text"
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{base_url}}/auth/mfa/verify",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "auth",
+                    "mfa",
+                    "verify"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Setup",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{bearer_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "key": "email",
+                      "value": "admin@tax.com",
+                      "type": "text"
+                    },
+                    {
+                      "key": "password",
+                      "value": "123123123",
+                      "type": "text"
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{base_url}}/auth/mfa/setup",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "auth",
+                    "mfa",
+                    "setup"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Confirm",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{bearer_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "key": "email",
+                      "value": "admin@tax.com",
+                      "type": "text"
+                    },
+                    {
+                      "key": "password",
+                      "value": "123123123",
+                      "type": "text"
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{base_url}}/auth/mfa/confirm",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "auth",
+                    "mfa",
+                    "confirm"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Disable",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{bearer_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "key": "email",
+                      "value": "admin@tax.com",
+                      "type": "text"
+                    },
+                    {
+                      "key": "password",
+                      "value": "123123123",
+                      "type": "text"
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{base_url}}/auth/mfa/disable",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "auth",
+                    "mfa",
+                    "disable"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const response = pm.response.json();\r",
+                  "\r",
+                  "if(response.success){\r",
+                  "    pm.environment.set(\"bearer_token\", response.data.access_token);\r",
+                  "    pm.globals.set(\"bearer_token\", response.data.access_token);\r",
+                  "    pm.collectionVariables.set(\"bearer_token\", response.data.access_token)\r",
+                  "}"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "email",
+                  "value": "admin@tax.com",
+                  "type": "text"
+                },
+                {
+                  "key": "password",
+                  "value": "123123123",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/login",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "auth",
+                "login"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Refresh",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{temp_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "email",
+                  "value": "admin@tax.com",
+                  "type": "text"
+                },
+                {
+                  "key": "password",
+                  "value": "123123123",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/refresh",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "auth",
+                "refresh"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Register",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "email",
+                  "value": "testverify10@yopmail.com",
+                  "type": "text"
+                },
+                {
+                  "key": "password",
+                  "value": "Nmdp7788!",
+                  "type": "text"
+                },
+                {
+                  "key": "device_token",
+                  "value": "iuharfhiafaiwafa",
+                  "type": "text"
+                },
+                {
+                  "key": "device_type",
+                  "value": "ios",
+                  "type": "text"
+                },
+                {
+                  "key": "fcm_token",
+                  "value": "fpyRp97sSf-vERtidK3CWp:APA91bGFRpkjAJZ0ckp7BMVioJ6YWuu2KLiOJ5ATmbr8eb8LG9ag8SxkW1uMBDhYDffQNZBvkrRzG9MB0daUFhdgAq05ycA7qX4e6AUf2YD855DOke79NFc",
+                  "type": "text",
+                  "uuid": "1efd56c3-340c-41e2-9897-b8a31057d41c"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/register",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "auth",
+                "register"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "logout",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "email",
+                  "value": "testverify10@yopmail.com",
+                  "type": "text"
+                },
+                {
+                  "key": "password",
+                  "value": "Nmdp7788!",
+                  "type": "text"
+                },
+                {
+                  "key": "device_token",
+                  "value": "iuharfhiafaiwafa",
+                  "type": "text"
+                },
+                {
+                  "key": "device_type",
+                  "value": "ios",
+                  "type": "text"
+                },
+                {
+                  "key": "fcm_token",
+                  "value": "fpyRp97sSf-vERtidK3CWp:APA91bGFRpkjAJZ0ckp7BMVioJ6YWuu2KLiOJ5ATmbr8eb8LG9ag8SxkW1uMBDhYDffQNZBvkrRzG9MB0daUFhdgAq05ycA7qX4e6AUf2YD855DOke79NFc",
+                  "type": "text",
+                  "uuid": "1efd56c3-340c-41e2-9897-b8a31057d41c"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/logout",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "auth",
+                "logout"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Logout All",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "email",
+                  "value": "testverify10@yopmail.com",
+                  "type": "text"
+                },
+                {
+                  "key": "password",
+                  "value": "Nmdp7788!",
+                  "type": "text"
+                },
+                {
+                  "key": "device_token",
+                  "value": "iuharfhiafaiwafa",
+                  "type": "text"
+                },
+                {
+                  "key": "device_type",
+                  "value": "ios",
+                  "type": "text"
+                },
+                {
+                  "key": "fcm_token",
+                  "value": "fpyRp97sSf-vERtidK3CWp:APA91bGFRpkjAJZ0ckp7BMVioJ6YWuu2KLiOJ5ATmbr8eb8LG9ag8SxkW1uMBDhYDffQNZBvkrRzG9MB0daUFhdgAq05ycA7qX4e6AUf2YD855DOke79NFc",
+                  "type": "text",
+                  "uuid": "1efd56c3-340c-41e2-9897-b8a31057d41c"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/logout-all",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "auth",
+                "logout-all"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Payer",
+      "item": [
+        {
+          "name": "Create (individual)",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{bearer_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"file_type\": \"Individual\",\r\n\r\n    \"first_name\": \"Zohaib\",\r\n    \"middle_name\": \"Ahmed\",\r\n    \"last_name\": \"Khan\",      // this can be business name and last_name\r\n    \"suffix\": \"Jr\",\r\n    \"id_type\": \"SSN\",\r\n    \"id_number\": \"222-22-2222\",\r\n    \"email\": \"zohaib@yopmail.com\",\r\n    \"phone_number\": \"03342342312\",\r\n    \"disregarded_entity\": \"testing entity\",\r\n    \"address_one\": \"White House Garden Society\",\r\n    \"city\": \"Karachi\",\r\n    \"state\": \"NY\",\r\n    \"zip_code\": \"85001\",\r\n    \"country\": \"PK\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/payers",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "payers"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create (business)",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{bearer_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"file_type\": \"Business\",\r\n\r\n    // \"name\": \"Tafsol Technologies\",\r\n    \"last_name\": \"Tafsol Technologies\",      // this can be business name and last_name\r\n    // \"suffix\": \"Jrs\",\r\n    \"id_type\": \"EIN\",\r\n    \"id_number\": \"22-2222222\",\r\n    \"email\": \"zohaib@yopmail.com\",\r\n    \"phone_number\": \"03342342312\",\r\n    \"disregarded_entity\": \"testing entity\",\r\n    \"address_one\": \"White House Garden Society\",\r\n    \"address_two\": \"R:801 block 18\",\r\n    \"city\": \"Karachi\",\r\n    \"state\": \"NY\",\r\n    \"zip_code\": \"85001\",\r\n    \"country\": \"PK\",\r\n    \"client_payer_id\": \"etstin\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/payers",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "payers"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get All",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{bearer_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/payers",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "payers"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Show",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{bearer_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"file_type\": \"Individual\",\r\n\r\n    \"first_name\": \"Zohaib\",\r\n    \"middle_name\": \"Ahmed\",\r\n    \"last_name\": \"Khan\",      // this can be business name and last_name\r\n    \"suffix\": \"Jr\",\r\n    \"id_type\": \"SSN\",\r\n    \"id_number\": \"222-22-2222\",\r\n    \"email\": \"zohaib@yopmail.com\",\r\n    \"phone_number\": \"03342342312\",\r\n    \"disregarded_entity\": \"testing entity\",\r\n    \"address_one\": \"White House Garden Society\",\r\n    \"city\": \"Karachi\",\r\n    \"state\": \"NY\",\r\n    \"zip_code\": \"85001\",\r\n    \"country\": \"PK\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/payers/ad980892-a891-4273-b243-0de26ec4c975",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "payers",
+                "ad980892-a891-4273-b243-0de26ec4c975"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{bearer_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"file_type\": \"Individual\",\r\n\r\n    \"first_name\": \"Zohaib\",\r\n    \"middle_name\": \"Ahmed\",\r\n    \"last_name\": \"Khan\",      // this can be business name and last_name\r\n    \"suffix\": \"Jr\",\r\n    \"id_type\": \"SSN\",\r\n    \"id_number\": \"222-22-2222\",\r\n    \"email\": \"zohaib@yopmail.com\",\r\n    \"phone_number\": \"03342342312\",\r\n    \"disregarded_entity\": \"testing entity\",\r\n    \"address_one\": \"White House Garden Society\",\r\n    \"city\": \"Karachi\",\r\n    \"state\": \"NY\",\r\n    \"zip_code\": \"85002\",\r\n    \"country\": \"PK\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/payers/59e893f7-d1dd-48a7-9747-",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "payers",
+                "59e893f7-d1dd-48a7-9747-"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Status Update",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{bearer_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"is_active\": false\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/payers/ad980892-a891-4273-b243-0de26ec4c975/status",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "payers",
+                "ad980892-a891-4273-b243-0de26ec4c975",
+                "status"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Download CSV template",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{bearer_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"is_active\": false\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/payers/bulk-upload/template",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "payers",
+                "bulk-upload",
+                "template"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Upload CSV",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{bearer_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"is_active\": false\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/payers/bulk-upload",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "payers",
+                "bulk-upload"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Receipient",
+      "item": [
+        {
+          "name": "Get",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{bearer_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/recipients",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "recipients"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{bearer_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"payer_uuid\": \"568b3a16-49dc-4551-805b-263472202719\",\r\n    \"file_type\": \"Individual\",\r\n    \"first_name\": \"Shoaib\",\r\n    \"middle_name\": \"Ahmed\",\r\n    \"last_name\": \"Khan\",\r\n    \"suffix\": \"Jr\",\r\n    \"recipient_tin\": \"111-11-1111\",\r\n    \"tin_not_provided\": false,\r\n    \"email\": \"shoaib@gmail.com\",\r\n    \"phone_number\": \"03362536325\",\r\n    \"address_one\": \"R:311 Seacon Appartment ground floor\",\r\n    \"address_two\": \"D43 Gulshan-e-iqbal\",\r\n    \"city\": \"Karachi\",\r\n    \"state\": \"Sindh\",\r\n    \"zip_code\": \"923823\",\r\n    \"country\": \"US\",\r\n    \"is_foreign_address\": false\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/recipients",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "recipients"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": ""
+    },
+    {
+      "key": "bearer_token",
+      "value": ""
+    }
+  ]
+}
