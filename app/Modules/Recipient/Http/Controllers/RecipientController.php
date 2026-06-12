@@ -28,8 +28,8 @@ class RecipientController extends Controller
     public function store(CreateRecipientRequest $request): JsonResponse
     {
         $data = $request->validated();
+        $data["user_id"] = auth()->id();
         $dto = RecipientDTO::fromRequest($data);
-        return response()->json($dto->toArray());
         $result = $this->recipientService->store($dto);
         return $this->success($result->toArray(), 'Recipient Created Successful..');
     }

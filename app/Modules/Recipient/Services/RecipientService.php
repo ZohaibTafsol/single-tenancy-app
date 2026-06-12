@@ -3,7 +3,7 @@
 namespace App\Modules\Recipient\Services;
 
 use App\Modules\Recipient\Models\Recipient;
-use App\Modules\Recipient\Actions\StoreRecipientAction;
+use App\Modules\Recipient\Actions\CreateRecipientAction;
 use App\Modules\Recipient\Actions\UpdateRecipientAction;
 use App\Modules\Recipient\Contracts\RecipientRepositoryContract;
 use App\Modules\Recipient\DTOs\RecipientDTO;
@@ -13,19 +13,19 @@ use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 class RecipientService
 {
     public function __construct(
-        private readonly StoreRecipientAction  $storeRecipientAction,
+        private readonly CreateRecipientAction  $createRecipientAction,
         private readonly UpdateRecipientAction $updateRecipientAction,
-        private readonly RecipientRepositoryContract $RecipientRepository,
+        private readonly RecipientRepositoryContract $recipientRepository,
     ) {}
 
     public function getRecipients(array $filterData): LengthAwarePaginator
     {
         $filterData['user_id'] = auth()->id();
-        return $this->RecipientRepository->getRecipients($filterData);
+        return $this->recipientRepository->getRecipients($filterData);
     }
     public function store(RecipientDTO $dto): Recipient
     {
-        return $this->storeRecipientAction->execute($dto);
+        return $this->createRecipientAction->execute($dto);
     }
 
    public function update(int $id, RecipientDTO $dto): Recipient
@@ -35,11 +35,11 @@ class RecipientService
 
    public function delete(int $id): void
     {
-        $recipient = $this->RecipientRepository->findById($id);
+        $recipient = $this->recipientRepository->findById($id);
 
         if (! $recipient) {
             throw new RecipientNotFoundException($id);
         }
-        $this->RecipientRepository->delete($recipient);
+        $this->recipientRepository->delete($recipient);
     }
 }

@@ -61,7 +61,7 @@ class CreateRecipientRequest extends FormRequest
 
             // ── Contact ───────────────────────────────────────────────────
             // Email is required when W-8 or W-9 is selected
-            'email_address' => [
+            'email' => [
                 $w8orW9 ? 'required' : 'nullable',
                 'nullable',
                 'email',
@@ -71,7 +71,7 @@ class CreateRecipientRequest extends FormRequest
 
             // ── Address ───────────────────────────────────────────────────
             'validate_address'  => ['boolean'],
-            'foreign_address'   => ['boolean'],
+            'is_foreign_address'   => ['boolean'],
 
             'address_one' => [
                 ($isIndividual || $isBusiness) ? 'required' : 'nullable',
@@ -141,7 +141,7 @@ class CreateRecipientRequest extends FormRequest
         $this->merge([
             'tin_not_provided'          => $this->boolean('tin_not_provided'),
             'validate_address'          => $this->boolean('validate_address'),
-            'foreign_address'           => $this->boolean('foreign_address'),
+            'is_foreign_address'           => $this->boolean('is_foreign_address'),
             'w8_request'                => $this->boolean('w8_request'),
             'w9_request'                => $this->boolean('w9_request'),
         ]);
@@ -163,8 +163,8 @@ class CreateRecipientRequest extends FormRequest
             'recipient_tin.required'         => 'Recipient TIN is required unless "TIN not provided" is checked.',
             'recipient_tin.regex'            => 'Recipient TIN must be in the format 111-11-1111.',
 
-            'email_address.required'         => 'Email address is required when a W-8 or W-9 request is selected.',
-            'email_address.email'            => 'Please enter a valid email address.',
+            'email.required'         => 'Email address is required when a W-8 or W-9 request is selected.',
+            'email.email'            => 'Please enter a valid email address.',
 
             'address_one.required'        => 'Address Line 1 is required.',
             'city.required'                  => 'City is required.',
@@ -190,10 +190,10 @@ class CreateRecipientRequest extends FormRequest
             'attention_to'          => 'attention to',
             'recipient_tin'         => 'recipient TIN',
             'tin_not_provided'      => 'TIN not provided',
-            'email_address'         => 'email address',
+            'email'         => 'email address',
             'phone_number'          => 'phone number',
             'validate_address'      => 'validate address',
-            'foreign_address'       => 'foreign address',
+            'is_foreign_address'       => 'is foreign address',
             'address_one'        => 'address line 1',
             'address_two'        => 'address line 2',
             'city'                  => 'city',

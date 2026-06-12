@@ -6,6 +6,7 @@ class RecipientDTO
 {
     public function __construct(
         public ?string $payerUuid,
+        public ?int $userId,
         public ?string $fileType,
         public ?bool $w8Request,
         public ?bool $w9Request,
@@ -25,12 +26,16 @@ class RecipientDTO
         public ?string $state,
         public ?string $zipCode,
         public ?string $country,
+        public ?bool $isForeignAddress,
+        public ?string $clientRecipientId,
+        public ?string $emailLanguage,
     ) {}
 
     public static function fromRequest(array $data): self
     {
         return new self(
             $data['payer_uuid'] ?? null,
+            $data['user_id'] ?? null,
             $data['file_type'] ?? null,
             $data['w8_request'] ?? false,
             $data['w9_request'] ?? false,
@@ -43,19 +48,23 @@ class RecipientDTO
             $data['recipient_tin'] ?? null,
             $data['tin_not_provided'] ?? false,
             $data['email'] ?? null,
-            $data['phone'] ?? null,
+            $data['phone_number'] ?? null,
             $data['address_one'] ?? null,
             $data['address_two'] ?? null,
             $data['city'] ?? null,
             $data['state'] ?? null,
             $data['zip_code'] ?? null,
             $data['country'] ?? null,
+            $data["is_foreign_address"] ?? false,
+            $data["client_recipient_id"] ?? null,
+            $data["email_language"] ?? null
         );
     }
     public function toArray(): array
     {
         return [
             'payer_uuid' => $this->payerUuid,
+            'user_id' => $this->userId,
             'file_type' => $this->fileType,
             'w8_request' => $this->w8Request,
             'w9_request' => $this->w9Request,
@@ -76,6 +85,9 @@ class RecipientDTO
             'state' => $this->state,
             'zip_code' => $this->zipCode,
             'country' => $this->country,
+            'is_foreign_address' => $this->isForeignAddress,
+            'client_recipient_id' => $this->clientRecipientId,
+            'email_language' => $this->emailLanguage
         ];
     }
 }

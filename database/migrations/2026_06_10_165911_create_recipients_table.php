@@ -46,9 +46,9 @@ return new class extends Migration
             $table->string('address_one', 255)->nullable()->comment('Address Line 1');
             $table->string('address_two', 255)->nullable()->comment('Address Line 2 (Optional)');
             $table->string('city', 100)->nullable()->comment('City');
-            $table->char('state', 2)->nullable()->comment('State: 2-letter code (US only)');
+            $table->string('state', 100)->nullable()->comment('State, province, region, or administrative area');
             $table->string('zip_code', 10)->nullable()->comment('ZIP Code: supports ZIP+4 format (e.g. 12345-6789)');
-            $table->char('country', 2)->default('US')->comment('Country: ISO 3166-1 alpha-2');
+            $table->string('country', 100)->default('US')->comment('Country name or ISO 3166-1 alpha-2 country code');
             $table->boolean('is_foreign_address')->default(false)->comment('Flag for foreign (non-US) address');
 
             // ── Optional / Client Fields ───────────────────────────────

@@ -10,7 +10,7 @@ interface RecipientRepositoryContract
 {
     public function getRecipients(array $filterData): LengthAwarePaginator;
     public function findById(int $id): ?Recipient;
-    public function store(RecipientDTO $dto): Recipient;
+    public function store(array $data): Recipient;
     public function update(Recipient $Recipient, RecipientDTO $dto): Recipient;
     public function delete(Recipient $Recipient): void;
 }
