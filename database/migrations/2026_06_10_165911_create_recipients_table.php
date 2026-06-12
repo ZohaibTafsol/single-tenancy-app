@@ -53,7 +53,7 @@ return new class extends Migration
 
             // ── Optional / Client Fields ───────────────────────────────
             $table->string('client_recipient_id', 100)->nullable()->index()->comment('Client-side Recipient ID for cross-referencing');
-            $table->string('email_language', 10)->default('en')->comment('Language for recipient emails e.g. en, es, fr');
+            $table->enum('email_language', ['en', 'es'])->nullable()->comment('Language for recipient emails (en = English, es = Spanish)');
 
             // ── tax1099 API Sync ───────────────────────────────────────
             $table->string('recipient_detail_id', 100)->nullable()->unique()->comment('RecipientDetailId returned by tax1099 API');
