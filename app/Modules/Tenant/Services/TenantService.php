@@ -2,36 +2,42 @@
 
 namespace App\Modules\Tenant\Services;
 
-use App\Modules\Tenant\DTOs\TenantDTO;
+use App\Modules\Tenant\DTOs\{TenantDTO, DomainDTO};
 use App\Modules\Tenant\Models\Tenant;
 use Illuminate\Pagination\LengthAwarePaginator;
+use App\Modules\Tenant\Contracts\TenantRepositoryContract;
 
-class TenantService 
+class TenantService
 {
-    public function paginate(int $perPage = 15): LengthAwarePaginator
+    public function __construct(
+        private readonly TenantRepositoryContract $repository,
+        private readonly DomainService $domainService,
+    ) {}
+
+    public function paginate(int $perPage = 15, array $filters = []): LengthAwarePaginator
     {
-        return Tenant::latest()->paginate($perPage);
+        return $this->repository->paginate($perPage, $filters);
     }
 
     public function findOrFail(int|string $id): Tenant
     {
-        return Tenant::findOrFail($id);
+        return $this->repository->findOrFail($id);
     }
 
-    public function create(TenantDTO $dto): Tenant
+    public function create(TenantDTO $tenantDTO, DomainDTO $domainDTO): Tenant
     {
-        return Tenant::create($dto->toArray());
+        $tenant = $this->repository->create($tenantDTO);
+        $this->domainService->create($tenant, $domainDTO);
+        return $tenant->load('domains');
     }
 
     public function update(Tenant $model, TenantDTO $dto): Tenant
     {
-        $model->update($dto->toArray());
-
-        return $model->fresh();
+        return $this->repository->update($model, $dto);
     }
 
     public function delete(Tenant $model): void
     {
-        $model->delete();
+        $this->repository->delete($model);
     }
 }

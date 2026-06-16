@@ -2,26 +2,23 @@
 
 namespace App\Modules\Tenant\DTOs;
 
-class TenantDTO
+class DomainDTO
 {
     public function __construct(
-        public readonly string $name,
-        public readonly string $email,
+        public readonly string $domainName,
     ) {}
 
     public static function fromRequest(array $data): self
     {
         return new self(
-            $data['name'],
-            $data['email'],
+            domainName: $data['domain_name'],
         );
     }
 
     public function toArray(): array
     {
         return [
-            'name' => $this->name,
-            'email' => $this->email,
+            'domain_name' => $this->domainName,
         ];
     }
 }

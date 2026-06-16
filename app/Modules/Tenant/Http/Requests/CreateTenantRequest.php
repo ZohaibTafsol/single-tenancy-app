@@ -16,6 +16,7 @@ class CreateTenantRequest extends FormRequest
         return [
             'name' => ['required', 'string', 'max:255'],
             'email' => ["required", "email", "unique:tenants,email"],
+            'domain_name' => ["required", "unique:tenants,email"]
         ];
     }
 }
