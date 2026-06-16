@@ -24,5 +24,8 @@ Route::middleware([
     PreventAccessFromCentralDomains::class,
 ])->prefix('v1')
     ->group(function () {
-        require app_path('Modules/Auth/routes.php');
+        Route::get("/", function (){
+            return tenant();
+        });
+        // require app_path('Modules/Auth/routes.php');
     });

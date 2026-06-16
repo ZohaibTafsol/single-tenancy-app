@@ -10,6 +10,7 @@ class ModuleServiceProvider extends ServiceProvider
         \App\Modules\Auth\AuthServiceProvider::class,
         \App\Modules\Payer\PayerServiceProvider::class,
         \App\Modules\Recipient\RecipientServiceProvider::class,
+        \App\Modules\Tenant\TenantServiceProvider::class,
     ];
     /**
      * Register services.

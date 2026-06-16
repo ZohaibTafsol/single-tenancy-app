@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Str;
 
 class TenantSeeder extends Seeder
 {
@@ -14,6 +15,7 @@ class TenantSeeder extends Seeder
     {
         $tenant_one = \App\Models\Tenant::create([
             'id' => 'tenant-one',
+            'uuid' => Str::uuid(),
             'name' => 'Tenant One',
         ]);
         $tenant_one->domains()->create([

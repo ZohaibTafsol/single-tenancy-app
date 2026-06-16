@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models;
+namespace App\Modules\Tenant\Models;
 
 use Stancl\Tenancy\Database\Models\Tenant as BaseTenant;
 use Stancl\Tenancy\Contracts\TenantWithDatabase;
@@ -10,4 +10,14 @@ use Stancl\Tenancy\Database\Concerns\HasDomains;
 class Tenant extends BaseTenant implements TenantWithDatabase
 {
     use HasDatabase, HasDomains;
+
+    public static function getCustomColumns(): array
+    {
+        return [
+            "id",
+            "uuid",
+            "name",
+            "email"
+        ];
+    }
 }
