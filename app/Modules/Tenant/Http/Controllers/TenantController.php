@@ -40,9 +40,8 @@ class TenantController extends Controller
     /** GET /api/tenants/{id} */
     public function show(int|string $id): JsonResponse
     {
-        $model = $this->tenantService->findOrFail($id);
-
-        return response()->json($model);
+        $tenant = $this->tenantService->findByIdOrUuid($id);
+        return $this->success($tenant, "Tenant Created Successfully");
     }
 
     /** PUT|PATCH /api/tenants/{id} */

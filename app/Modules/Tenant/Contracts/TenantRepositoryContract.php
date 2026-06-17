@@ -10,6 +10,7 @@ interface TenantRepositoryContract
 {
     public function paginate(int $perPage, array $filters): LengthAwarePaginator;
     public function findOrFail(int|string $id): Tenant;
+    public function findByIdOrUuid(int|string $id): Tenant;
     public function create(TenantDTO $dto): Tenant;
     public function update(Tenant $model, TenantDTO $dto): Tenant;
     public function delete(Tenant $model): void;

@@ -24,9 +24,9 @@ class TenantService
         return $this->repository->paginate($perPage, $filters);
     }
 
-    public function findOrFail(int|string $id): Tenant
+    public function findByIdOrUuid(int|string $id): Tenant
     {
-        return $this->repository->findOrFail($id);
+        return $this->repository->findByIdOrUuid($id)->load("domains");
     }
 
     public function create(TenantDTO $tenantDTO, DomainDTO $domainDTO): Tenant

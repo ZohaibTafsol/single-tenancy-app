@@ -20,6 +20,10 @@ class TenantRepository implements TenantRepositoryContract
     {
         return Tenant::findOrFail($id);
     }
+    public function findByIdOrUuid(int|string $id): Tenant
+    {
+        return Tenant::where('id', $id)->orWhere('uuid', $id)->firstOrFail();
+    }
 
     public function create(TenantDTO $dto): Tenant
     {
