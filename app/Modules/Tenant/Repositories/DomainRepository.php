@@ -11,7 +11,10 @@ class DomainRepository implements DomainRepositoryContract
 {
     public function create(Tenant $tenant, DomainDTO $dto): Domain
     {
-        return $tenant->domains()->create($dto->toArray());
+        $data = $dto->toArray();
+        return $tenant->domains()->create([
+            "domain" => $data["domain_name"] . "." . config("app.domain")
+        ]);
     }
 
     public function findOrFail(int|string $id): Domain

@@ -6,6 +6,7 @@ use App\Modules\Tenant\DTOs\{TenantDTO, DomainDTO};
 use App\Modules\Tenant\Models\Tenant;
 use Illuminate\Pagination\LengthAwarePaginator;
 use App\Modules\Tenant\Contracts\TenantRepositoryContract;
+use Illuminate\Support\Facades\DB;
 
 class TenantService
 {
@@ -26,9 +27,13 @@ class TenantService
 
     public function create(TenantDTO $tenantDTO, DomainDTO $domainDTO): Tenant
     {
-        $tenant = $this->repository->create($tenantDTO);
-        $this->domainService->create($tenant, $domainDTO);
-        return $tenant->load('domains');
+        return DB::transaction(function () use ($tenantDTO, $domainDTO) {
+            $tenant = $this->repository->create($tenantDTO);
+
+            $this->domainService->create($tenant, $domainDTO);
+
+            return $tenant->load('domains');
+        });
     }
 
     public function update(Tenant $model, TenantDTO $dto): Tenant
