@@ -9,9 +9,8 @@ use Illuminate\Support\Str;
 class MakeModuleCommand extends Command
 {
     protected $signature   = 'make:module {module : The module name (e.g. Tenant)}';
-    protected $description = 'Scaffold a new module with Controller, Model, Service, DTO, and Request classes';
+    protected $description = 'Scaffold a new module with Controller, Model, Contract, Repository, Service, DTO, and Request classes';
 
-    // Prefixed with "mod" to avoid collision with Command::$name
     private string $modStudly;
     private string $modCamel;
     private string $modSnake;
@@ -54,9 +53,11 @@ class MakeModuleCommand extends Command
             $this->makeDirectories();
             $this->makeModel();
             $this->makeDTO();
+            $this->makeContract();
+            $this->makeRepository();
+            $this->makeService();
             $this->makeCreateRequest();
             $this->makeUpdateRequest();
-            $this->makeService();
             $this->makeController();
         } catch (\Throwable $e) {
             $this->newLine();
@@ -72,12 +73,17 @@ class MakeModuleCommand extends Command
         $this->line("  <fg=gray>app/Modules/{$this->modStudly}/</>");
         $this->line("  ├── Models/{$this->modStudly}.php");
         $this->line("  ├── DTOs/{$this->modStudly}DTO.php");
+        $this->line("  ├── Contracts/{$this->modStudly}RepositoryContract.php");
+        $this->line("  ├── Repositories/{$this->modStudly}Repository.php");
         $this->line("  ├── Services/{$this->modStudly}Service.php");
         $this->line("  ├── Http/Controllers/{$this->modStudly}Controller.php");
         $this->line("  ├── Http/Requests/Create{$this->modStudly}Request.php");
         $this->line("  └── Http/Requests/Update{$this->modStudly}Request.php");
         $this->newLine();
-        $this->line("  <fg=yellow>Register the route in routes/api.php:</>");
+        $this->line("  <fg=yellow>1. Register the binding in AppServiceProvider:</>");
+        $this->line("  \$this->app->bind(\\{$this->modNamespace}\\Contracts\\{$this->modStudly}RepositoryContract::class, \\{$this->modNamespace}\\Repositories\\{$this->modStudly}Repository::class);");
+        $this->newLine();
+        $this->line("  <fg=yellow>2. Register the route in routes/api.php:</>");
         $this->line("  Route::apiResource('{$this->modPluralSnake}', \\{$this->modNamespace}\\Http\\Controllers\\{$this->modStudly}Controller::class);");
         $this->newLine();
 
@@ -93,6 +99,8 @@ class MakeModuleCommand extends Command
         $dirs = [
             'Models',
             'DTOs',
+            'Contracts',
+            'Repositories',
             'Services',
             'Http/Controllers',
             'Http/Requests',
@@ -149,6 +157,8 @@ class MakeModuleCommand extends Command
 
         namespace {ns}\DTOs;
 
+        use Illuminate\Http\Request;
+
         class {class}DTO
         {
             public function __construct(
@@ -156,10 +166,10 @@ class MakeModuleCommand extends Command
                 // public readonly string \$name,
             ) {}
 
-            public static function fromArray(array \$data): self
+            public static function fromRequest(Request \$request): self
             {
                 return new self(
-                    // \$data['name'],
+                    // name: \$request->input('name'),
                 );
             }
 
@@ -173,6 +183,139 @@ class MakeModuleCommand extends Command
         PHP;
 
         $this->write("DTOs/{$this->modStudly}DTO.php", $this->interpolate($stub, [
+            '{ns}'    => $this->modNamespace,
+            '{class}' => $this->modStudly,
+        ]));
+    }
+
+    private function makeContract(): void
+    {
+        $stub = <<<PHP
+        <?php
+
+        namespace {ns}\Contracts;
+
+        use {ns}\DTOs\{class}DTO;
+        use {ns}\Models\{class};
+        use Illuminate\Pagination\LengthAwarePaginator;
+
+        interface {class}RepositoryContract
+        {
+            public function paginate(int \$perPage, array \$filters): LengthAwarePaginator;
+
+            public function findOrFail(int|string \$id): {class};
+
+            public function create({class}DTO \$dto): {class};
+
+            public function update({class} \$model, {class}DTO \$dto): {class};
+
+            public function delete({class} \$model): void;
+        }
+        PHP;
+
+        $this->write("Contracts/{$this->modStudly}RepositoryContract.php", $this->interpolate($stub, [
+            '{ns}'    => $this->modNamespace,
+            '{class}' => $this->modStudly,
+        ]));
+    }
+
+    private function makeRepository(): void
+    {
+        $stub = <<<PHP
+        <?php
+
+        namespace {ns}\Repositories;
+
+        use {ns}\Contracts\{class}RepositoryContract;
+        use {ns}\DTOs\{class}DTO;
+        use {ns}\Models\{class};
+        use Illuminate\Pagination\LengthAwarePaginator;
+
+        class {class}Repository implements {class}RepositoryContract
+        {
+            public function paginate(int \$perPage = 15, array \$filters = []): LengthAwarePaginator
+            {
+                return {class}::latest()
+                    ->when(! empty(\$filters['search']), fn(\$q) => \$q->where('name', 'LIKE', "%{\$filters['search']}%"))
+                    ->paginate(\$perPage);
+            }
+
+            public function findOrFail(int|string \$id): {class}
+            {
+                return {class}::findOrFail(\$id);
+            }
+
+            public function create({class}DTO \$dto): {class}
+            {
+                return {class}::create(\$dto->toArray());
+            }
+
+            public function update({class} \$model, {class}DTO \$dto): {class}
+            {
+                \$model->update(\$dto->toArray());
+
+                return \$model->fresh();
+            }
+
+            public function delete({class} \$model): void
+            {
+                \$model->delete();
+            }
+        }
+        PHP;
+
+        $this->write("Repositories/{$this->modStudly}Repository.php", $this->interpolate($stub, [
+            '{ns}'    => $this->modNamespace,
+            '{class}' => $this->modStudly,
+        ]));
+    }
+
+    private function makeService(): void
+    {
+        $stub = <<<PHP
+        <?php
+
+        namespace {ns}\Services;
+
+        use {ns}\Contracts\{class}RepositoryContract;
+        use {ns}\DTOs\{class}DTO;
+        use {ns}\Models\{class};
+        use Illuminate\Pagination\LengthAwarePaginator;
+
+        class {class}Service
+        {
+            public function __construct(
+                private readonly {class}RepositoryContract \$repository,
+            ) {}
+
+            public function paginate(int \$perPage = 15, array \$filters = []): LengthAwarePaginator
+            {
+                return \$this->repository->paginate(\$perPage, \$filters);
+            }
+
+            public function findOrFail(int|string \$id): {class}
+            {
+                return \$this->repository->findOrFail(\$id);
+            }
+
+            public function create({class}DTO \$dto): {class}
+            {
+                return \$this->repository->create(\$dto);
+            }
+
+            public function update({class} \$model, {class}DTO \$dto): {class}
+            {
+                return \$this->repository->update(\$model, \$dto);
+            }
+
+            public function delete({class} \$model): void
+            {
+                \$this->repository->delete(\$model);
+            }
+        }
+        PHP;
+
+        $this->write("Services/{$this->modStudly}Service.php", $this->interpolate($stub, [
             '{ns}'    => $this->modNamespace,
             '{class}' => $this->modStudly,
         ]));
@@ -242,54 +385,6 @@ class MakeModuleCommand extends Command
         ]));
     }
 
-    private function makeService(): void
-    {
-        $stub = <<<PHP
-        <?php
-
-        namespace {ns}\Services;
-
-        use {ns}\DTOs\{class}DTO;
-        use {ns}\Models\{class};
-        use Illuminate\Pagination\LengthAwarePaginator;
-
-        class {class}Service
-        {
-            public function paginate(int \$perPage = 15): LengthAwarePaginator
-            {
-                return {class}::latest()->paginate(\$perPage);
-            }
-
-            public function findOrFail(int|string \$id): {class}
-            {
-                return {class}::findOrFail(\$id);
-            }
-
-            public function create({class}DTO \$dto): {class}
-            {
-                return {class}::create(\$dto->toArray());
-            }
-
-            public function update({class} \$model, {class}DTO \$dto): {class}
-            {
-                \$model->update(\$dto->toArray());
-
-                return \$model->fresh();
-            }
-
-            public function delete({class} \$model): void
-            {
-                \$model->delete();
-            }
-        }
-        PHP;
-
-        $this->write("Services/{$this->modStudly}Service.php", $this->interpolate($stub, [
-            '{ns}'    => $this->modNamespace,
-            '{class}' => $this->modStudly,
-        ]));
-    }
-
     private function makeController(): void
     {
         $stub = <<<PHP
@@ -316,7 +411,8 @@ class MakeModuleCommand extends Command
             public function index(Request \$request): JsonResponse
             {
                 \$data = \$this->service->paginate(
-                    (int) \$request->query('per_page', 15)
+                    perPage: (int) \$request->query('per_page', 15),
+                    filters: \$request->only(['search']),
                 );
 
                 return response()->json(\$data);
@@ -325,7 +421,7 @@ class MakeModuleCommand extends Command
             /** POST /api/{route} */
             public function store(Create{class}Request \$request): JsonResponse
             {
-                \$dto    = {class}DTO::fromArray(\$request->validated());
+                \$dto    = {class}DTO::fromRequest(\$request);
                 \$result = \$this->service->create(\$dto);
 
                 return response()->json(\$result, 201);
@@ -343,7 +439,7 @@ class MakeModuleCommand extends Command
             public function update(Update{class}Request \$request, int|string \$id): JsonResponse
             {
                 \$model  = \$this->service->findOrFail(\$id);
-                \$dto    = {class}DTO::fromArray(\$request->validated());
+                \$dto    = {class}DTO::fromRequest(\$request);
                 \$result = \$this->service->update(\$model, \$dto);
 
                 return response()->json(\$result);
@@ -371,12 +467,8 @@ class MakeModuleCommand extends Command
     //  Helpers
     // -----------------------------------------------------------------------
 
-    /**
-     * Replace {tokens} in a heredoc stub and strip leading indentation.
-     */
     private function interpolate(string $stub, array $replacements): string
     {
-        // Strip the 8-space heredoc indent added by the method body
         $stub = preg_replace('/^        /m', '', $stub);
 
         return str_replace(

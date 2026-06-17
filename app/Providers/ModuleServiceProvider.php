@@ -11,6 +11,7 @@ class ModuleServiceProvider extends ServiceProvider
         \App\Modules\Payer\PayerServiceProvider::class,
         \App\Modules\Recipient\RecipientServiceProvider::class,
         \App\Modules\Tenant\TenantServiceProvider::class,
+        \App\Modules\User\UserServiceProvider::class,
     ];
     /**
      * Register services.

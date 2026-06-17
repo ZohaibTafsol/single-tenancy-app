@@ -7,12 +7,16 @@ use App\Modules\Tenant\Models\Tenant;
 use Illuminate\Pagination\LengthAwarePaginator;
 use App\Modules\Tenant\Contracts\TenantRepositoryContract;
 use Illuminate\Support\Facades\DB;
+use App\Modules\User\Services\UserService;
+use App\Modules\User\DTOs\UserDTO;
+use Illuminate\Support\Str;
 
 class TenantService
 {
     public function __construct(
         private readonly TenantRepositoryContract $repository,
         private readonly DomainService $domainService,
+        private readonly UserService $userService
     ) {}
 
     public function paginate(int $perPage = 15, array $filters = []): LengthAwarePaginator
@@ -31,6 +35,16 @@ class TenantService
             $tenant = $this->repository->create($tenantDTO);
 
             $this->domainService->create($tenant, $domainDTO);
+            $password = Str::random(12);
+
+            $this->userService->create(UserDTO::fromRequest([
+                "name" => $tenant->name,
+                "email" =>  $tenant->email,
+                "password" => $password,
+                "tenant_id" => $tenant->id
+            ]));
+
+            // DB::afterCommit(fn() => $this->mailService->sendTenantCredentials($tenant, $password));
 
             return $tenant->load('domains');
         });
