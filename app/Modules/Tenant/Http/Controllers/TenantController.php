@@ -29,16 +29,12 @@ class TenantController extends Controller
     /** POST /api/tenants */
     public function store(CreateTenantRequest $request): JsonResponse
     {
-        // try{
-            $data    = $request->validated();
-            $result = $this->tenantService->create(
-                TenantDTO::fromRequest($data),
-                DomainDTO::fromRequest($data),
-            );
-            return response()->json($result, 201);
-        // }catch(\Exception $e){
-        //     return $this->error($e->getMessage());
-        // }
+        $data    = $request->validated();
+        $tenant = $this->tenantService->create(
+            TenantDTO::fromRequest($data),
+            DomainDTO::fromRequest($data),
+        );
+        return $this->success($tenant, "Tenant Created Successfully");
     }
 
     /** GET /api/tenants/{id} */
